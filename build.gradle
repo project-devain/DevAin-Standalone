@@ -1,9 +1,10 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.7.21'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group = 'org.example'
-version = '1.0-SNAPSHOT'
+version = rootProject.properties["version"]
 
 repositories {
     mavenCentral()
@@ -34,3 +35,13 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = '1.8'
 }
+
+jar {
+    dependsOn shadowJar
+    manifest {
+        attributes(
+                'Main-Class': 'skywolf46.devain.DevAin'
+        )
+    }
+}
+
