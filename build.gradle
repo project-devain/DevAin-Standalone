@@ -40,7 +40,7 @@ jar {
     dependsOn shadowJar
     manifest {
         attributes(
-                'Main-Class': 'skywolf46.devain.DevAin'
+                'Main-Class': 'skywolf46.devain.DevAinKt'
         )
     }
 }
