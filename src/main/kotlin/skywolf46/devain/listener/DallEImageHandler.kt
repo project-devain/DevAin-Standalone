@@ -10,7 +10,7 @@ import skywolf46.devain.config.BotConfig
 import skywolf46.devain.util.OpenAiRequest
 
 object DallEImageHandler {
-    fun handle(config: BotConfig,event: SlashCommandInteractionEvent) {
+    fun handle(config: BotConfig, event: SlashCommandInteractionEvent) {
         event.deferReply(false).queue { hook ->
             processRequest(hook, config, event.getOption("prompt")!!.asString)
         }
@@ -26,7 +26,7 @@ object DallEImageHandler {
                 }.onRight {
                     hook.sendMessageEmbeds(
                         EmbedBuilder()
-                            .setTitle(prompt)
+                            .setTitle(if(prompt.length > 250) "${prompt.substring(0, 250)}..." else prompt)
                             .setImage(it.urls[0])
                             .build()
                     ).queue()
