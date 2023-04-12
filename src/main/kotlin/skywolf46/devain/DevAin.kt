@@ -10,17 +10,14 @@ fun main(args: Array<String>) {
 }
 
 class DevAin {
-    val version =
-        "1.0.0"
-//        Properties().apply {
-//            load(javaClass.getResourceAsStream("devain.properties"))
-//        }["version"]
+    val version = "1.0.1 - Dead End GingerBread"
 
     lateinit var config: BotConfig
         private set
 
     lateinit var discordBot: DiscordBot
         private set
+
 
     internal fun init() {
         println("DevAin $version - 초기화 시작")
