@@ -4,6 +4,13 @@
 
 해당 문서는 DevAin Standalone 1.1.0 (Double Barrel Rollcake)을 기준으로 작성되었습니다.
 
+##### Devain
+
+| 명령어         | 설명                        |
+|-------------|---------------------------|
+| /status     | DevAin 봇의 상태를 확인합니다.      |
+| /update-log | DevAin 봇의 업데이트 로그를 확인합니다. |
+
 ##### GPT Chat
 
 | 명령어                         | 설명                                                                                  |
@@ -33,7 +40,6 @@
 | /dream [engine] [Prompt]    | DreamStudio API를 이용해 이미지를 생성합니다.         |
 
 ##### DreamBooth Image Generation
-
 
 | 명령어                         | 설명                                       |
 |-----------------------------|------------------------------------------|
