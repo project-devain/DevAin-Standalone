@@ -1,8 +1,8 @@
-package skywolf46.devain.data.gpt
+package skywolf46.devain.data.parsed.gpt
 
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
-import skywolf46.devain.data.ParsedTokenUsage
+import skywolf46.devain.data.parsed.ParsedTokenUsage
 
 class ParsedGPTResult(data: JSONObject) {
     val chatId = data["id"].toString()

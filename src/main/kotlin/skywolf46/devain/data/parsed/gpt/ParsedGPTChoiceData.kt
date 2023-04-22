@@ -1,4 +1,4 @@
-package skywolf46.devain.data.gpt
+package skywolf46.devain.data.parsed.gpt
 
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject

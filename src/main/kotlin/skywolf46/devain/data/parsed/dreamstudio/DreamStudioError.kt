@@ -1,4 +1,4 @@
-package skywolf46.devain.data.dreamstudio
+package skywolf46.devain.data.parsed.dreamstudio
 
 import org.json.simple.JSONObject
 

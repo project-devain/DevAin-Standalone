@@ -11,10 +11,10 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
-import skywolf46.devain.data.dalle.DallEResult
-import skywolf46.devain.data.edit.ParsedEditResult
-import skywolf46.devain.data.gpt.GPTRequest
-import skywolf46.devain.data.gpt.ParsedGPTResult
+import skywolf46.devain.data.parsed.dalle.DallEResult
+import skywolf46.devain.data.parsed.edit.ParsedEditResult
+import skywolf46.devain.data.parsed.gpt.GPTRequest
+import skywolf46.devain.data.parsed.gpt.ParsedGPTResult
 import skywolf46.devain.sessions.ChattingSession
 
 const val GPT_ENDPOINT = "https://api.openai.com/v1/chat/completions"

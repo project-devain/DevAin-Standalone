@@ -1,4 +1,4 @@
-package skywolf46.devain.data
+package skywolf46.devain.data.parsed
 
 import org.json.simple.JSONObject
 

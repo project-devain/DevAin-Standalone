@@ -1,4 +1,4 @@
-package skywolf46.devain.data.edit
+package skywolf46.devain.data.parsed.edit
 
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject

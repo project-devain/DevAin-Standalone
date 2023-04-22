@@ -1,9 +1,8 @@
-package skywolf46.devain.data.edit
+package skywolf46.devain.data.parsed.edit
 
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
-import skywolf46.devain.data.gpt.ParsedGPTChoiceData
-import skywolf46.devain.data.ParsedTokenUsage
+import skywolf46.devain.data.parsed.ParsedTokenUsage
 
 class ParsedEditResult(data: JSONObject) {
     val objective = data["object"].toString()

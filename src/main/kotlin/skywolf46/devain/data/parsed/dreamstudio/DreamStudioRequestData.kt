@@ -1,4 +1,4 @@
-package skywolf46.devain.data.dreamstudio
+package skywolf46.devain.data.parsed.dreamstudio
 
 class DreamStudioRequestData(
     val prompt : List<Pair<String, Double>>,

@@ -1,4 +1,4 @@
-package skywolf46.devain.data.dalle
+package skywolf46.devain.data.parsed.dalle
 
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
