@@ -11,9 +11,9 @@ import io.ktor.http.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
-import skywolf46.devain.data.dreamstudio.DreamStudioError
-import skywolf46.devain.data.dreamstudio.DreamStudioRequestData
-import skywolf46.devain.data.dreamstudio.DreamStudioResponse
+import skywolf46.devain.data.parsed.dreamstudio.DreamStudioError
+import skywolf46.devain.data.parsed.dreamstudio.DreamStudioRequestData
+import skywolf46.devain.data.parsed.dreamstudio.DreamStudioResponse
 
 const val DREAM_STUDIO_ENDPOINT = "https://api.stability.ai/v1/generation/{engine_id}/text-to-image"
 

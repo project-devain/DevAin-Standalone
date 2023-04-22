@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.utils.FileUpload
 import skywolf46.devain.config.BotConfig
-import skywolf46.devain.data.dreamstudio.DreamStudioRequestData
+import skywolf46.devain.data.parsed.dreamstudio.DreamStudioRequestData
 import skywolf46.devain.util.DreamStudioRequest
 import java.util.*
 

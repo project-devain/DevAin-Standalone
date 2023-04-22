@@ -8,8 +8,8 @@ import java.text.DecimalFormat
 object GPTPredicateHandler {
 
     private val priceInfo = mapOf("gpt-4" to (0.03 to 0.06), "gpt-3.5-turbo" to (0.002 to 0.002))
-    private const val dollarToWonMultiplier = 1322.50
-    private val databaseTime = "2023-04-11"
+    private const val dollarToWonMultiplier = 1330.39
+    private val databaseTime = "2023-04-22"
     private val decimalFormat = DecimalFormat("#.###")
     private val decimalFormatInteger = DecimalFormat("#,###")
     fun handle(config: BotConfig, event: SlashCommandInteractionEvent) {

@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.utils.FileUpload
 import skywolf46.devain.config.BotConfig
-import skywolf46.devain.data.gpt.GPTRequest
-import skywolf46.devain.data.gpt.ParsedGPTResult
+import skywolf46.devain.data.parsed.gpt.GPTRequest
+import skywolf46.devain.data.parsed.gpt.ParsedGPTResult
 import skywolf46.devain.util.OpenAiRequest
 import java.text.DecimalFormat
 import kotlin.math.round
