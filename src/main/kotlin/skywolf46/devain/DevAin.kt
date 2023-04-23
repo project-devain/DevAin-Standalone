@@ -42,8 +42,16 @@ class DevAin {
     private fun initializeCommands() {
         println("명령어 초기화중..")
         discordBot.registerCommands(
-            SimpleGPTCommand(config, "ask", "gpt-3.5-turbo"),
-            SimpleGPTCommand(config, "ask-more", "gpt-4"),
+            SimpleGPTCommand(
+                config,
+                "ask",
+                "GPT-3.5에게 질문합니다. GPT-4보다 비교적 빠릅니다. 세션을 보관하지 않으며, 명령어당 하나의 세션으로 인식합니다.",
+                "gpt-3.5-turbo"
+            ),
+            SimpleGPTCommand(config,
+                "ask-more",
+                "GPT-4에게 질문합니다. GPT-4는 느리지만, 조금 더 논리적인 답변을 기대할 수 있습니다.",
+                "gpt-4"),
         )
     }
 }

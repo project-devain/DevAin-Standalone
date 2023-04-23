@@ -20,7 +20,7 @@ import skywolf46.devain.util.OpenAiRequest
 import java.text.DecimalFormat
 import kotlin.math.round
 
-class SimpleGPTCommand(private val config: BotConfig, private val command: String, private val model: String? = null) :
+class SimpleGPTCommand(private val config: BotConfig, private val command: String, private val description: String, private val model: String? = null) :
     DiscordCommand() {
     companion object {
         const val DEFAULT_MODEL = "gpt-4"
@@ -31,7 +31,7 @@ class SimpleGPTCommand(private val config: BotConfig, private val command: Strin
 
     override fun createCommandInfo(): Pair<String, CommandData> {
         val commandData =
-            Commands.slash(command, "ChatGPT-3.5에게 질문합니다. GPT-4보다 비교적 빠릅니다. 세션을 보관하지 않으며, 명령어당 하나의 세션으로 인식합니다.")
+            Commands.slash(command, description)
         if (model == null) {
             commandData.addOption(OptionType.STRING, "model", "")
         }
