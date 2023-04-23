@@ -1,5 +1,6 @@
 package skywolf46.devain
 
+import skywolf46.devain.commands.discord.SimpleGPTCommand
 import skywolf46.devain.config.BotConfig
 import skywolf46.devain.discord.DiscordBot
 import java.io.File
@@ -10,13 +11,15 @@ fun main(args: Array<String>) {
 }
 
 class DevAin {
-    val version = "1.0.1 - Dead End GingerBread"
+    val version = "1.1.0 - Double Barrel Rollcake"
 
     lateinit var config: BotConfig
         private set
 
     lateinit var discordBot: DiscordBot
         private set
+
+    val startTime = System.currentTimeMillis()
 
 
     internal fun init() {
@@ -32,6 +35,15 @@ class DevAin {
 
     private fun initializeBot() {
         println("디스코드 봇 활성화중..")
-        discordBot = DiscordBot(config)
+        discordBot = DiscordBot(this, config)
+        initializeCommands()
+    }
+
+    private fun initializeCommands() {
+        println("명령어 초기화중..")
+        discordBot.registerCommands(
+            SimpleGPTCommand(config, "ask", "gpt-3.5-turbo"),
+            SimpleGPTCommand(config, "ask-more", "gpt-4"),
+        )
     }
 }
