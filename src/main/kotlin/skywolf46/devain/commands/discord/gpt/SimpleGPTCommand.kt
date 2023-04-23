@@ -1,4 +1,4 @@
-package skywolf46.devain.commands.discord
+package skywolf46.devain.commands.discord.gpt
 
 import arrow.core.Either
 import arrow.core.continuations.either
