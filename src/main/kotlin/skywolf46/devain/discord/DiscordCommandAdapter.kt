@@ -1,6 +1,7 @@
 package skywolf46.devain.discord
 
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
@@ -17,10 +18,11 @@ class DiscordCommandAdapter(private val jda: JDA) : ListenerAdapter() {
         updateAction.queue()
     }
 
-
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         commandRegistry[event.name]?.triggerCommand(event)
     }
 
-
+    override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
+        commandRegistry[event.name]?.triggerAutoComplete(event)
+    }
 }
