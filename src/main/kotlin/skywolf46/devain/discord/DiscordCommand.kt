@@ -19,6 +19,10 @@ abstract class DiscordCommand {
         runBlocking { onCommand(event) }
     }
 
+    fun triggerAutoComplete(event: CommandAutoCompleteInteractionEvent) {
+        runBlocking { onAutoComplete(event) }
+    }
+
     protected open suspend fun onCommand(event: SlashCommandInteractionEvent) {
 
     }
@@ -29,31 +33,37 @@ abstract class DiscordCommand {
 
     abstract fun createCommandInfo(): Pair<String, CommandData>
 
-    fun SlashCommandInteractionEvent.deferEmbed(unit: suspend (event: SlashCommandInteractionEvent, hook: InteractionHook) -> Either<String, MessageEmbed>) {
-        deferReply().queue { hook ->
-            CoroutineScope(devainCommandDispatcher).launch(Dispatchers.Main) {
+    fun SlashCommandInteractionEvent.deferEmbed(
+        isEphemeral: Boolean = false,
+        unit: suspend (event: SlashCommandInteractionEvent, hook: InteractionHook) -> Either<String, MessageEmbed>
+    ) {
+        deferReply(isEphemeral).queue { hook ->
+            CoroutineScope(devainCommandDispatcher).launch {
                 unit(this@deferEmbed, hook).onLeft {
                     hook.sendMessage(it).queue()
                 }.onRight {
-                    replyEmbeds(it).queue()
+                    hook.sendMessageEmbeds(it).queue()
                 }
             }
         }
     }
 
-
-    suspend fun SlashCommandInteractionEvent.deferMessage(unit: suspend (event: SlashCommandInteractionEvent, hook: InteractionHook) -> Either<String, String>) {
-        deferReply().queue { hook ->
+    suspend fun SlashCommandInteractionEvent.deferMessage(
+        isEphemeral: Boolean = false,
+        unit: suspend (event: SlashCommandInteractionEvent, hook: InteractionHook) -> Either<String, String>
+    ) {
+        deferReply(isEphemeral).queue { hook ->
             CoroutineScope(devainCommandDispatcher).launch {
-                reply(unit(this@deferMessage, hook).onLeft {
-                    hook.sendMessage(it).queue()
-                }.fold(::identity, ::identity)).queue()
+                hook.sendMessage(unit(this@deferMessage, hook).fold(::identity, ::identity)).queue()
             }
         }
     }
 
-    suspend fun SlashCommandInteractionEvent.deferError(unit: suspend (event: SlashCommandInteractionEvent, hook: InteractionHook) -> Either<String, Unit>) {
-        deferReply().queue { hook ->
+    suspend fun SlashCommandInteractionEvent.deferError(
+        isEphemeral: Boolean = false,
+        unit: suspend (event: SlashCommandInteractionEvent, hook: InteractionHook) -> Either<String, Unit>
+    ) {
+        deferReply(isEphemeral).queue { hook ->
             CoroutineScope(devainCommandDispatcher).launch {
                 unit(this@deferError, hook).onLeft {
                     hook.sendMessage(it).queue()
@@ -62,8 +72,11 @@ abstract class DiscordCommand {
         }
     }
 
-    suspend fun SlashCommandInteractionEvent.defer(unit: suspend (event: SlashCommandInteractionEvent, hook: InteractionHook) -> Unit) {
-        deferReply().queue { hook ->
+    suspend fun SlashCommandInteractionEvent.defer(
+        isEphemeral: Boolean = false,
+        unit: suspend (event: SlashCommandInteractionEvent, hook: InteractionHook) -> Unit
+    ) {
+        deferReply(isEphemeral).queue { hook ->
             CoroutineScope(devainCommandDispatcher).launch {
                 unit(this@defer, hook)
             }
