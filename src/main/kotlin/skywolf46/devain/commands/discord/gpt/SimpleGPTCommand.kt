@@ -5,6 +5,10 @@ import arrow.core.continuations.either
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
+import kotlinx.coroutines.runBlocking
+import net.dv8tion.jda.api.entities.IMentionable
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
@@ -15,12 +19,19 @@ import net.dv8tion.jda.api.utils.FileUpload
 import skywolf46.devain.config.BotConfig
 import skywolf46.devain.data.parsed.gpt.GPTRequest
 import skywolf46.devain.data.parsed.gpt.ParsedGPTResult
+import skywolf46.devain.data.storage.PresetStorage
 import skywolf46.devain.discord.DiscordCommand
 import skywolf46.devain.util.OpenAiRequest
 import java.text.DecimalFormat
 import kotlin.math.round
 
-class SimpleGPTCommand(private val config: BotConfig, private val command: String, private val description: String, private val model: String? = null) :
+class SimpleGPTCommand(
+    private val storage: PresetStorage,
+    private val config: BotConfig,
+    private val command: String,
+    private val description: String,
+    private val model: String? = null
+) :
     DiscordCommand() {
     companion object {
         const val DEFAULT_MODEL = "gpt-4"
@@ -35,15 +46,18 @@ class SimpleGPTCommand(private val config: BotConfig, private val command: Strin
         if (model == null) {
             commandData.addOption(OptionType.STRING, "model", "")
         }
-        commandData.addOption(OptionType.STRING, "contents", "ChatGPT-3.5에게 질문할 내용입니다.", true).addOption(
-            OptionType.NUMBER,
-            "temperature",
-            "모델의 temperature 값을 설정합니다. 값이 낮을수록 결정적이 되며, 높을수록 더 많은 무작위성이 가해집니다. (기본 1, 0-1.5내의 소수)",
-            false
-        ).addOption(
-            OptionType.NUMBER, "top_p", "모델의 top_p 값을 설정합니다. 값이 낮을수록 토큰의 샘플링 범위가 낮아집니다. (기본 1, 0-1.5내의 소수)", false
-        ).addOption(OptionType.INTEGER, "max-token", "최대 토큰 개수를 설정합니다.")
-            .addOption(OptionType.BOOLEAN, "hide-prompt", "결과 창에서 프롬프트를 숨깁니다. 명령어 클릭은 숨겨지지 않습니다.")
+        commandData.addOption(OptionType.STRING, "contents", "ChatGPT-3.5에게 질문할 내용입니다.", true)
+            .addOption(OptionType.USER, "preset-user", "프롬프트를 불러올 사용자를 지정합니다. 공개 프리셋이 아닐 경우, 사용할 수 없습니다.", false)
+            .addOption(OptionType.STRING, "preset", "사용할 프리셋을 선택합니다.", false, true)
+            .addOption(
+                OptionType.NUMBER,
+                "temperature",
+                "모델의 temperature 값을 설정합니다. 값이 낮을수록 결정적이 되며, 높을수록 더 많은 무작위성이 가해집니다. (기본 1, 0-1.5내의 소수)",
+                false
+            ).addOption(
+                OptionType.NUMBER, "top_p", "모델의 top_p 값을 설정합니다. 값이 낮을수록 토큰의 샘플링 범위가 낮아집니다. (기본 1, 0-1.5내의 소수)", false
+            ).addOption(OptionType.INTEGER, "max-token", "최대 토큰 개수를 설정합니다.", false)
+            .addOption(OptionType.BOOLEAN, "hide-prompt", "결과 창에서 프롬프트를 숨깁니다. 명령어 클릭은 숨겨지지 않습니다.", false)
         return command to commandData
     }
 
@@ -57,21 +71,42 @@ class SimpleGPTCommand(private val config: BotConfig, private val command: Strin
         event: SlashCommandInteractionEvent, hook: InteractionHook
     ): Either<String, Unit> {
         val request = buildRequest(event).getOrElse { return it.left() }
-        return requestGpt(hook, request)
+        return requestGpt(event, hook, request)
     }
 
     private fun buildRequest(event: SlashCommandInteractionEvent): Either<String, GPTRequest> = either.eager {
         event.getOption("temperature")?.checkTemperatureRestriction()?.bind()
         event.getOption("top_p")?.checkSamplerParameterRestriction()?.bind()
         event.getOption("max_token")?.checkMaxTokenRestriction()?.bind()
+        val preset =
+            event.getOption("preset")?.getPreset(event.getOption("preset-user")?.asMentionable, event.member!!)?.bind()
         GPTRequest(
             model ?: event.getOption("model")?.asString ?: DEFAULT_MODEL,
             event.getOption("contents")!!.asString,
+            event.getOption("preset")?.asString,
+            preset,
             event.getOption("temperature")?.asDouble ?: -1.0,
             event.getOption("top_p")?.asDouble ?: -1.0,
             event.getOption("max-token")?.asInt ?: -1,
             event.getOption("hide-prompt")?.asBoolean ?: false
         )
+    }
+
+    private fun OptionMapping.getPreset(target: IMentionable?, member: Member): Either<String, String> {
+        val userPresets = runBlocking {
+            if (target == null) {
+                storage.getPresetById(member.guild.idLong, member.idLong, asString, true)
+            } else {
+                storage.getPresetById(member.guild.idLong, target.idLong, asString, false)
+            }
+        }
+        val preset =
+            userPresets.toEither { "프리셋 ${"${if (target != null) "${target.asMention}:" else ""}`${asString}`"}은 등록된 프리셋이 아닙니다." }
+                .getOrElse { return it.left() }
+        if (target != null && target.idLong != member.idLong && !preset.isShared) {
+            return "프리셋 ${"${"${target.asMention}:"}`${asString}`"}은 공개된 프리셋이 아닙니다.".left()
+        }
+        return preset.contents.right()
     }
 
     private fun OptionMapping.checkTemperatureRestriction(): Either<String, Unit> {
@@ -99,15 +134,24 @@ class SimpleGPTCommand(private val config: BotConfig, private val command: Strin
         }.mapLeft { "잘못된 파라미터 값이 전달되었습니다 : maxToken 값이 숫자가 아닙니다." }
     }
 
-    private suspend fun requestGpt(hook: InteractionHook, request: GPTRequest): Either<String, Unit> {
+    private suspend fun requestGpt(
+        event: SlashCommandInteractionEvent,
+        hook: InteractionHook,
+        request: GPTRequest
+    ): Either<String, Unit> {
         val result = OpenAiRequest.requestGpt(config.openAIToken, request).getOrElse {
             return it.left()
         }
-        return sendResult(hook, request, result).right()
+        return sendResult(event, hook, request, result).right()
     }
 
-    private fun sendResult(hook: InteractionHook, request: GPTRequest, result: ParsedGPTResult) {
-        val text = buildReturnValue(request, result)
+    private fun sendResult(
+        event: SlashCommandInteractionEvent,
+        hook: InteractionHook,
+        request: GPTRequest,
+        result: ParsedGPTResult
+    ) {
+        val text = buildReturnValue(event, request, result)
         if (text.length >= 2000) {
             hook.sendFiles(FileUpload.fromData(text.toByteArray(), "answer.txt")).queue()
         } else {
@@ -115,21 +159,26 @@ class SimpleGPTCommand(private val config: BotConfig, private val command: Strin
         }
     }
 
-    private fun buildReturnValue(request: GPTRequest, result: ParsedGPTResult): String {
+    private fun buildReturnValue(
+        event: SlashCommandInteractionEvent,
+        request: GPTRequest,
+        result: ParsedGPTResult
+    ): String {
         val builder = StringBuilder()
-        appendApiInfo(builder, request, result)
+        appendApiInfo(event, builder, request, result)
         if (!request.hideRequest)
             appendRequest(builder, request)
         appendResult(builder, result)
         return builder.toString()
     }
 
-    private fun appendModel(builder: StringBuilder, request: GPTRequest) {
+    private fun appendModel(event: SlashCommandInteractionEvent, builder: StringBuilder, request: GPTRequest) {
         builder.append("└ 모델: ${request.model}").appendNewLine()
-        appendParameter(builder, request)
+        appendParameter(event, builder, request)
     }
 
     private fun appendParameter(
+        event: SlashCommandInteractionEvent,
         builder: StringBuilder,
         request: GPTRequest
     ) {
@@ -143,14 +192,23 @@ class SimpleGPTCommand(private val config: BotConfig, private val command: Strin
         if (request.maxToken != -1) {
             builder.append("  └ Max tokens: ${decimalFormat.format(request.maxToken)}").appendNewLine()
         }
+        if (request.presetId != null) {
+            builder.append("  └ Preset applied : ${"${event.getOption("preset-user")?.asMentionable?.asMention?.plus(":") ?: ""}`${request.presetId}`"}")
+                .appendNewLine()
+        }
         if (request.hideRequest) {
             builder.append("  └ Prompt hidden").appendNewLine()
         }
     }
 
-    private fun appendApiInfo(builder: StringBuilder, request: GPTRequest, result: ParsedGPTResult) {
+    private fun appendApiInfo(
+        event: SlashCommandInteractionEvent,
+        builder: StringBuilder,
+        request: GPTRequest,
+        result: ParsedGPTResult
+    ) {
         builder.append("**API 상세**:").appendNewLine(1)
-        appendModel(builder, request)
+        appendModel(event, builder, request)
         builder.append("└ API 소모: ${result.tokenUsage.totalTokens}토큰")
         if (request.model in priceInfo) {
             val token = result.tokenUsage.totalTokens.toDouble() / 1000.0
@@ -173,5 +231,14 @@ class SimpleGPTCommand(private val config: BotConfig, private val command: Strin
 
     private fun StringBuilder.appendNewLine(count: Int = 1) {
         append("\n".repeat(count))
+    }
+
+    override suspend fun onAutoComplete(event: CommandAutoCompleteInteractionEvent) {
+        val presets = if (event.getOption("preset-user") != null) {
+            storage.getPresetList(event.guild!!.idLong, event.getOption("preset-user")!!.asLong, false)
+        } else {
+            storage.getPresetList(event.guild!!.idLong, event.member!!.idLong, true)
+        }
+        event.replyChoiceStrings(presets.filter { it.startsWith(event.focusedOption.value) }).queue()
     }
 }

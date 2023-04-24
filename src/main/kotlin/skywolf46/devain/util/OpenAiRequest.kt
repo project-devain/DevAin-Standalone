@@ -34,7 +34,11 @@ object OpenAiRequest {
         request: GPTRequest
     ): Either<String, ParsedGPTResult> {
         val response = client.post(GPT_ENDPOINT) {
-            val session = ChattingSession(-1L).addDialog(ChattingSession.DialogType.USER, request.contents)
+            val session = ChattingSession(-1L)
+            if (request.preset != null) {
+                session.addDialog(ChattingSession.DialogType.USER, request.preset)
+            }
+            session.addDialog(ChattingSession.DialogType.USER, request.contents)
             contentType(ContentType.Application.Json)
             headers {
                 append("Authorization", "Bearer $apiKey")
