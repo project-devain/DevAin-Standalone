@@ -1,6 +1,6 @@
-package skywolf46.devain.storage
+package skywolf46.devain.data.storage
 
-import skywolf46.devain.sessions.ChattingSession
+import skywolf46.devain.data.sessions.ChattingSession
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 

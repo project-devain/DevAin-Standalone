@@ -15,7 +15,7 @@ import skywolf46.devain.data.parsed.dalle.DallEResult
 import skywolf46.devain.data.parsed.edit.ParsedEditResult
 import skywolf46.devain.data.parsed.gpt.GPTRequest
 import skywolf46.devain.data.parsed.gpt.ParsedGPTResult
-import skywolf46.devain.sessions.ChattingSession
+import skywolf46.devain.data.sessions.ChattingSession
 
 const val GPT_ENDPOINT = "https://api.openai.com/v1/chat/completions"
 const val DALL_E_ENDPOINT = "https://api.openai.com/v1/images/generations"

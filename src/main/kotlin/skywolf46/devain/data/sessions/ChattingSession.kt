@@ -1,4 +1,4 @@
-package skywolf46.devain.sessions
+package skywolf46.devain.data.sessions
 
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import org.json.simple.JSONArray
