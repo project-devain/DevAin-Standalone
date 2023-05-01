@@ -8,10 +8,15 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
+import org.koin.core.component.inject
+import skywolf46.devain.config.BotConfig
 import skywolf46.devain.data.storage.PresetStorage
-import skywolf46.devain.discord.DiscordCommand
+import skywolf46.devain.platform.discord.DiscordCommand
 
-class UserPresetAddCommand(private val storage: PresetStorage) : DiscordCommand() {
+class UserPresetAddCommand : DiscordCommand() {
+    private val config by inject<BotConfig>()
+    private val storage by inject<PresetStorage>()
+
     override fun createCommandInfo(): Pair<String, CommandData> {
         return "preset-add" to Commands.slash("preset-add", "새 프리셋을 등록합니다.")
             .addOption(OptionType.STRING, "name", "프리셋 이름을 지정합니다.", true)
@@ -60,8 +65,8 @@ class UserPresetAddCommand(private val storage: PresetStorage) : DiscordCommand(
 
     private fun insertPreset(member: Member, name: String, preset: String, isShared: Boolean): Either<String, String> {
         val defined = storage.getPresets(member.guild.idLong, member.idLong)
-        if (defined.size > 10 && name !in defined) {
-            return "유저 프리셋은 사용자당 최대 10개까지 지정 가능합니다.".left()
+        if (defined.size > config.maxUserPresetPerServer && name !in defined) {
+            return "유저 프리셋은 사용자당 최대 ${config.maxUserPresetPerServer}개까지 지정 가능합니다.".left()
         }
         storage.updatePreset(member.guild.idLong, member.idLong, name, preset, isShared)
         return if (name in defined) {
