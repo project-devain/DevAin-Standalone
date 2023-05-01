@@ -1,4 +1,4 @@
-package skywolf46.devain.discord
+package skywolf46.devain.platform.discord
 
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
@@ -28,7 +28,7 @@ class DiscordBot(devAin: DevAin, config: BotConfig) {
         jda.addEventListener(commandAdapter)
     }
 
-    fun registerCommands(vararg command: DiscordCommand) : DiscordBot {
+    fun registerCommands(vararg command: DiscordCommand): DiscordBot {
         commandAdapter.registerCommands(*command)
         return this
     }

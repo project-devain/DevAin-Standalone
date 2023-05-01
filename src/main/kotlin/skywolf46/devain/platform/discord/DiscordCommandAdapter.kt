@@ -1,4 +1,4 @@
-package skywolf46.devain.discord
+package skywolf46.devain.platform.discord
 
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent

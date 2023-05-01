@@ -1,4 +1,4 @@
-package skywolf46.devain.discord
+package skywolf46.devain.platform.discord
 
 import arrow.core.Either
 import arrow.core.identity
@@ -8,8 +8,9 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
+import org.koin.core.component.KoinComponent
 
-abstract class DiscordCommand {
+abstract class DiscordCommand : KoinComponent {
     companion object {
         @OptIn(DelicateCoroutinesApi::class)
         private val devainCommandDispatcher = newFixedThreadPoolContext(10, "DevAin-Command Dispatcher")
