@@ -15,7 +15,7 @@ import skywolf46.devain.data.parsed.dalle.DallEResult
 import skywolf46.devain.data.parsed.edit.ParsedEditResult
 import skywolf46.devain.data.parsed.gpt.GPTRequest
 import skywolf46.devain.data.parsed.gpt.ParsedGPTResult
-import skywolf46.devain.data.sessions.ChattingSession
+import skywolf46.devain.data.parsed.gpt.sessions.ChattingSession
 
 const val GPT_ENDPOINT = "https://api.openai.com/v1/chat/completions"
 const val DALL_E_ENDPOINT = "https://api.openai.com/v1/images/generations"
@@ -31,21 +31,22 @@ object OpenAiRequest {
 
     suspend fun requestGpt(
         apiKey: String,
-        request: GPTRequest
+        request: GPTRequest,
+        session: ChattingSession? = null
     ): Either<String, ParsedGPTResult> {
         val response = client.post(GPT_ENDPOINT) {
-            val session = ChattingSession(-1L)
+            val targetSession = session ?: ChattingSession(-1L, request.model)
             if (request.preset != null) {
-                session.addDialog(ChattingSession.DialogType.USER, request.preset)
+                targetSession.addDialog(ChattingSession.DialogType.USER, request.preset)
             }
-            session.addDialog(ChattingSession.DialogType.USER, request.contents)
+            targetSession.addDialog(ChattingSession.DialogType.USER, request.contents)
             contentType(ContentType.Application.Json)
             headers {
                 append("Authorization", "Bearer $apiKey")
             }
             setBody(JSONObject().apply {
-                this["model"] = request.model
-                this["messages"] = session.toJson()
+                this["model"] = targetSession.model
+                this["messages"] = targetSession.toJson()
                 if (request.temperature != -1.0) {
                     this["temperature"] = request.temperature
                 }
@@ -72,7 +73,13 @@ object OpenAiRequest {
         if (result.containsKey("error")) {
             return (result["error"] as JSONObject)["message"].toString().left()
         }
-        return ParsedGPTResult(result).right()
+        return ParsedGPTResult(result).apply {
+            session?.addDialog(
+                ChattingSession.DialogType.ASSISTANT,
+                this.choices[0].answer,
+                this.tokenUsage.completionTokens
+            )
+        }.right()
     }
 
     suspend fun requestEdit(
