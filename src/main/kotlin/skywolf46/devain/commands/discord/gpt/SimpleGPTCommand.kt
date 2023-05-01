@@ -16,18 +16,17 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.utils.FileUpload
+import org.koin.core.component.inject
 import skywolf46.devain.config.BotConfig
 import skywolf46.devain.data.parsed.gpt.GPTRequest
 import skywolf46.devain.data.parsed.gpt.ParsedGPTResult
 import skywolf46.devain.data.storage.PresetStorage
-import skywolf46.devain.discord.DiscordCommand
+import skywolf46.devain.platform.discord.DiscordCommand
 import skywolf46.devain.util.OpenAiRequest
 import java.text.DecimalFormat
 import kotlin.math.round
 
 class SimpleGPTCommand(
-    private val storage: PresetStorage,
-    private val config: BotConfig,
     private val command: String,
     private val description: String,
     private val model: String? = null
@@ -39,6 +38,9 @@ class SimpleGPTCommand(
         private const val dollarToWonMultiplier = 1322.50
         private val decimalFormat = DecimalFormat("#,###")
     }
+
+    private val config by inject<BotConfig>()
+    private val storage by inject<PresetStorage>()
 
     override fun createCommandInfo(): Pair<String, CommandData> {
         val commandData =
