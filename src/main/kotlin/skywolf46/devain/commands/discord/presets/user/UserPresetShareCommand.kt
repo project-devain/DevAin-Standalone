@@ -5,11 +5,15 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
+import org.koin.core.component.inject
 import skywolf46.devain.data.storage.PresetStorage
-import skywolf46.devain.discord.DiscordCommand
+import skywolf46.devain.platform.discord.DiscordCommand
 import java.awt.Color
 
-class UserPresetShareCommand(private val storage: PresetStorage) : DiscordCommand() {
+class UserPresetShareCommand : DiscordCommand() {
+
+    private val storage by inject<PresetStorage>()
+
     override fun createCommandInfo(): Pair<String, CommandData> {
         return "preset-share" to Commands.slash("preset-share", "사용자의 프리셋을 공유합니다.")
             .addOption(OptionType.STRING, "name", "대상 프리셋을 지정합니다.", true)
