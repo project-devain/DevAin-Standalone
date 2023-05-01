@@ -14,7 +14,7 @@ class PresetStorage {
 
     init {
         Class.forName("org.sqlite.JDBC")
-        connection = DriverManager.getConnection("jdbc:sqlite:presets.db");
+        connection = DriverManager.getConnection("jdbc:sqlite:presets.db")
         kotlin.runCatching {
             connection.prepareStatement("create table if not exists user_preset(serverId BIGINT, userId BIGINT, presetId VARCHAR(12), preset TEXT, isShared INT, primary key (serverId, userId, presetId))")
                 .use {
@@ -47,7 +47,7 @@ class PresetStorage {
         }
     }
 
-    fun getPresetList(serverId: Long, userId: Long, includeServer: Boolean) : List<String>{
+    fun getPresetList(serverId: Long, userId: Long, includeServer: Boolean): List<String> {
         return if (includeServer) {
             getUserPresetList(serverId, userId) + getServerPresetList(serverId)
         } else {
