@@ -12,11 +12,13 @@ import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
+import org.koin.core.component.inject
 import skywolf46.devain.data.storage.PresetStorage
-import skywolf46.devain.discord.DiscordCommand
+import skywolf46.devain.platform.discord.DiscordCommand
 import java.awt.Color
 
-class UserPresetListCommand(private val storage: PresetStorage) : DiscordCommand() {
+class UserPresetListCommand : DiscordCommand() {
+    private val storage by inject<PresetStorage>()
     override fun createCommandInfo(): Pair<String, CommandData> {
         return "preset-fetch" to Commands.slash("preset-fetch", "사용자의 프리셋을 조회합니다.")
             .addOption(OptionType.MENTIONABLE, "user", "대상 유저의 프리셋을 조회합니다. 관리자 권한이 필요합니다.", false)
@@ -29,7 +31,7 @@ class UserPresetListCommand(private val storage: PresetStorage) : DiscordCommand
         }
     }
 
-    private suspend fun executeCommand(
+    private fun executeCommand(
         event: SlashCommandInteractionEvent,
         hook: InteractionHook
     ): Either<String, MessageEmbed> {
