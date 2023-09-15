@@ -35,7 +35,6 @@ abstract class ImprovedDiscordCommand(val command: String, val descrption: Strin
 
 
     override suspend fun onAutoComplete(event: CommandAutoCompleteInteractionEvent) {
-        println("Completion!")
         if (event.focusedOption.name in completions) {
             event.replyChoiceStrings(
                 completions[event.focusedOption.name]!!.invoke(event)
