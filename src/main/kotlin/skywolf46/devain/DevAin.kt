@@ -10,7 +10,10 @@ import skywolf46.devain.controller.commands.discord.gpt.SimpleGPTCommand
 import skywolf46.devain.config.BotConfig
 import skywolf46.devain.controller.api.requests.deepl.DeepLTranslationAPICall
 import skywolf46.devain.controller.api.requests.openai.GPTCompletionAPICall
+import skywolf46.devain.controller.commands.discord.deepl.DeepLKoreanTranslationCommand
+import skywolf46.devain.controller.commands.discord.deepl.DeepLSimpleTranslationCommand
 import skywolf46.devain.controller.commands.discord.deepl.DeepLTranslationCommand
+import skywolf46.devain.controller.commands.discord.gpt.ModalGPTCommand
 import skywolf46.devain.platform.discord.DiscordBot
 
 
@@ -79,7 +82,29 @@ class DevAin : KoinComponent {
                 "gpt-4-0613"
             ),
 
-            DeepLTranslationCommand()
+            ModalGPTCommand(
+                "modal-gpt-fast",
+                "모달을 사용해 GPT-4에게 질문합니다. GPT-0613은 빠르지만, GPT-4보다 덜 정확할 수 있습니다.",
+                "gpt-4-0613"
+            ),
+
+
+            ModalGPTCommand(
+                "modal-gpt-more",
+                "모달을 사용해 GPt-4에게 질문합니다.  GPT-4는 느리지만, 조금 더 논리적인 답변을 기대할 수 있습니다.",
+                "gpt-4"
+            ),
+
+
+            ModalGPTCommand(
+                "modal-gpt",
+                "모달을 사용해 GPT-3.5에게 질문합니다. GPT-3.5는 빠르지만, GPT-4보다 부정확합니다.",
+                "gpt-3.5-turbo"
+            ),
+
+            DeepLTranslationCommand(),
+            DeepLSimpleTranslationCommand(),
+            DeepLKoreanTranslationCommand()
         )
 
     }
