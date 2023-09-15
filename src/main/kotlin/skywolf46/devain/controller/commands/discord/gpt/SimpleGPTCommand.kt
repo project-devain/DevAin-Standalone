@@ -69,6 +69,7 @@ class SimpleGPTCommand(
                 false
             )
             .addOption(OptionType.BOOLEAN, "hide-prompt", "결과 창에서 프롬프트를 숨깁니다. 명령어 클릭은 숨겨지지 않습니다.", false)
+            .addOption(OptionType.STRING, "base-prompt", "해당 프롬프트의 기반이 될 프롬프트입니다. AI는 해당 내용을 기반으로 답변을 시도합니다.", false)
         return command to commandData
     }
 
@@ -76,7 +77,11 @@ class SimpleGPTCommand(
         event.defer { _, hook ->
             val request = OpenAIGPTRequest(
                 model ?: event.getOption("model")!!.asString,
-                listOf(OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString)),
+                event.getOption("base-prompt")?.asString?.let {
+                    listOf(
+                        OpenAIGPTMessage(OpenAIGPTMessage.Role.ASSISTANT, it),
+                        OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString))
+                } ?: listOf(OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString)),
                 1,
                 event.getOption("temperature")?.asDouble.toOption(),
                 event.getOption("top_p")?.asDouble.toOption(),
@@ -166,7 +171,7 @@ class SimpleGPTCommand(
     }
 
     private fun appendRequest(builder: StringBuilder, request: OpenAIGPTRequest) {
-        builder.append("**요청:** \n${request.messages[0].content}")
+        builder.append("**요청:** \n${request.messages.last().content}")
         builder.appendNewLine(2)
     }
 
