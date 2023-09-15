@@ -27,9 +27,10 @@ abstract class ImprovedDiscordCommand(val command: String, val descrption: Strin
         description: String,
         required: Boolean,
         completion: (CommandAutoCompleteInteraction) -> List<String>
-    ) {
+    ) : SlashCommandData {
         addOption(OptionType.STRING, name, description, required, true)
         completions[name] = completion
+        return this
     }
 
 
