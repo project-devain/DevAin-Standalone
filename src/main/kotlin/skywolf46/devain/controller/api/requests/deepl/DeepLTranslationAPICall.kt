@@ -13,6 +13,8 @@ import skywolf46.devain.controller.api.error.PreconditionError
 import skywolf46.devain.controller.api.error.UnexpectedError
 import skywolf46.devain.model.rest.deepl.translation.DeepLTranslateRequest
 import skywolf46.devain.model.rest.deepl.translation.DeepLTranslateResponse
+import skywolf46.devain.util.getList
+import skywolf46.devain.util.getMap
 import skywolf46.devain.util.parseMap
 
 private const val DEEPL_FREE_TRANSLATION_ENDPOINT = "https://api-free.deepl.com/v2/translate"
@@ -26,16 +28,19 @@ class DeepLTranslationAPICall(private val apiKey: String, client: Option<HttpCli
     private val parser = get<JSONParser>()
 
     override suspend fun call(request: DeepLTranslateRequest): Either<APIError, DeepLTranslateResponse> {
-        val prebuiltRequest = request.asJson().getOrElse { return PreconditionError(it).left() }
-        val result = client.post(targetEndpointURL) {
-            contentType(ContentType.Application.Json)
-            headers {
-                append("Authorization", "DeepL-Auth-Key $apiKey")
-            }
-            setBody(prebuiltRequest.toJSONString())
-        }
         return runCatching {
-            DeepLTranslateResponse.fromJson(parser.parseMap(result.bodyAsText())).right()
+            val prebuiltRequest = request.asJson().getOrElse { return PreconditionError(it).left() }
+            val result = client.post(targetEndpointURL) {
+                contentType(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "DeepL-Auth-Key $apiKey")
+                }
+                setBody(prebuiltRequest.toJSONString())
+            }
+            val resultMap = parser.parseMap(result.bodyAsText())
+            if ("translations" !in resultMap)
+                return UnexpectedError(IllegalStateException("Translation not found in response (${resultMap})")).left()
+            DeepLTranslateResponse.fromJson(resultMap.getList("translations").getMap(0)).right()
         }.getOrElse {
             UnexpectedError(it).left()
         }
