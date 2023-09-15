@@ -22,7 +22,7 @@ abstract class ImprovedDiscordCommand(val command: String, val descrption: Strin
         // Do nothing
     }
 
-    protected fun SlashCommandData.addCompletableCommand(
+    protected fun SlashCommandData.addCompletableOption(
         name: String,
         description: String,
         required: Boolean,
