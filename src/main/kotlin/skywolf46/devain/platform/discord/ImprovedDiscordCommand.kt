@@ -85,5 +85,8 @@ abstract class ImprovedDiscordCommand(
         return command to createCommandData()
     }
 
+    protected fun box(string: String) : String {
+        return "```$string```"
+    }
 
 }
