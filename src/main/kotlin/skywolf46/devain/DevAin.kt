@@ -2,24 +2,15 @@ package skywolf46.devain
 
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import org.json.simple.parser.JSONParser
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
-import skywolf46.devain.commands.discord.devain.DevAinStatusCommand
-import skywolf46.devain.commands.discord.gpt.GPTTokenCalculationCommand
-import skywolf46.devain.commands.discord.gpt.SimpleGPTCommand
-import skywolf46.devain.commands.discord.gpt.sessions.SessionGPTCommand
-import skywolf46.devain.commands.discord.gpt.sessions.SessionInfoCommand
-import skywolf46.devain.commands.discord.gpt.sessions.StartGPTSessionCommand
-import skywolf46.devain.commands.discord.presets.user.UserPresetAddCommand
-import skywolf46.devain.commands.discord.presets.user.UserPresetListCommand
-import skywolf46.devain.commands.discord.presets.user.UserPresetShareCommand
+import skywolf46.devain.controller.commands.discord.gpt.SimpleGPTCommand
 import skywolf46.devain.config.BotConfig
-import skywolf46.devain.data.storage.ChattingSessionStorage
-import skywolf46.devain.data.storage.PresetStorage
-import skywolf46.devain.data.storage.SessionModelStorage
-import skywolf46.devain.data.storage.SessionTokenStorage
+import skywolf46.devain.controller.api.requests.deepl.DeepLTranslationAPICall
+import skywolf46.devain.controller.api.requests.openai.GPTCompletionAPICall
 import skywolf46.devain.platform.discord.DiscordBot
 
 
@@ -28,14 +19,11 @@ fun main(args: Array<String>) {
 }
 
 class DevAin : KoinComponent {
-    val version = "1.1.0 - Double Barrel Rollcake"
+    val version = "1.2.0 - Grenade Muffin"
+
+    private val botConfig = BotConfig()
 
     private val devAinModule = module {
-        single { BotConfig() }
-        single { PresetStorage() }
-        single { ChattingSessionStorage() }
-        single { SessionTokenStorage() }
-        single { SessionModelStorage() }
         single {
             HttpClient(CIO) {
                 engine {
@@ -44,6 +32,10 @@ class DevAin : KoinComponent {
             }
         }
         single { this@DevAin }
+        single { BotConfig() }
+        single { JSONParser() }
+        single { GPTCompletionAPICall(botConfig.openAIToken) }
+        single { DeepLTranslationAPICall(botConfig.deepLToken) }
     }
 
     lateinit var discordBot: DiscordBot
@@ -57,13 +49,8 @@ class DevAin : KoinComponent {
         println("DevAin $version - 초기화 시작")
         startKoin {
             modules(devAinModule)
-            loadConfig()
             initializeBot()
         }
-    }
-
-    private fun loadConfig() {
-        println("설정 불러오는 중..")
     }
 
     private fun initializeBot() {
@@ -85,20 +72,12 @@ class DevAin : KoinComponent {
                 "GPT-4에게 질문합니다. GPT-4는 느리지만, 조금 더 논리적인 답변을 기대할 수 있습니다.",
                 "gpt-4"
             ),
-            // GPT Session
-            StartGPTSessionCommand(),
-            SessionInfoCommand(),
-            GPTTokenCalculationCommand(),
-            SessionGPTCommand("session", "GPT 세션을 사용하여 질문합니다."),
 
-            // User Presets
-            UserPresetListCommand(),
-            UserPresetAddCommand(),
-            UserPresetShareCommand(),
-
-
-            // DevAin Status
-            DevAinStatusCommand()
+            SimpleGPTCommand(
+                "ask-fast",
+                "GPT-4-0613에게 질문합니다. GPT-4는 느리지만, 조금 더 논리적인 답변을 기대할 수 있습니다.",
+                "gpt-4-0613"
+            ),
         )
 
     }

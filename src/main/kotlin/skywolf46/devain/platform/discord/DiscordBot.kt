@@ -32,4 +32,9 @@ class DiscordBot(devAin: DevAin, config: BotConfig) {
         commandAdapter.registerCommands(*command)
         return this
     }
+
+    fun registerCommands(vararg command: ImprovedDiscordCommand): DiscordBot {
+        commandAdapter.registerCommands(*command)
+        return this
+    }
 }
