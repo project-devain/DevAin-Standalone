@@ -6,14 +6,19 @@ import org.json.simple.parser.JSONParser
 import org.koin.core.component.KoinComponent
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
-import skywolf46.devain.controller.commands.discord.gpt.SimpleGPTCommand
 import skywolf46.devain.config.BotConfig
 import skywolf46.devain.controller.api.requests.deepl.DeepLTranslationAPICall
+import skywolf46.devain.controller.api.requests.devain.DevAinAppPropertiesAPICall
+import skywolf46.devain.controller.api.requests.devain.DevAinPersistenceCountAPICall
+import skywolf46.devain.controller.api.requests.devain.DevAinUpdatePersistenceCountAPICall
 import skywolf46.devain.controller.api.requests.openai.GPTCompletionAPICall
 import skywolf46.devain.controller.commands.discord.deepl.DeepLKoreanTranslationCommand
 import skywolf46.devain.controller.commands.discord.deepl.DeepLSimpleTranslationCommand
 import skywolf46.devain.controller.commands.discord.deepl.DeepLTranslationCommand
+import skywolf46.devain.controller.commands.discord.devain.DevAinStatusCommand
 import skywolf46.devain.controller.commands.discord.gpt.ModalGPTCommand
+import skywolf46.devain.controller.commands.discord.gpt.SimpleGPTCommand
+import skywolf46.devain.model.store.SqliteStore
 import skywolf46.devain.platform.discord.DiscordBot
 
 
@@ -37,15 +42,19 @@ class DevAin : KoinComponent {
         single { this@DevAin }
         single { BotConfig() }
         single { JSONParser() }
+        single { SqliteStore() }
+
+        // API Call Initialization
         single { GPTCompletionAPICall(botConfig.openAIToken) }
         single { DeepLTranslationAPICall(botConfig.deepLToken) }
+        single { DevAinAppPropertiesAPICall() }
+        single { DevAinPersistenceCountAPICall() }
+        single { DevAinUpdatePersistenceCountAPICall() }
     }
 
     lateinit var discordBot: DiscordBot
         private set
 
-
-    val startTime = System.currentTimeMillis()
 
 
     internal fun init() {
@@ -104,7 +113,9 @@ class DevAin : KoinComponent {
 
             DeepLTranslationCommand(),
             DeepLSimpleTranslationCommand(),
-            DeepLKoreanTranslationCommand()
+            DeepLKoreanTranslationCommand(),
+
+            DevAinStatusCommand()
         )
 
     }
