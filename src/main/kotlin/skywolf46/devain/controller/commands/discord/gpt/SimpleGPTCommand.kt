@@ -52,7 +52,7 @@ class SimpleGPTCommand(
             )
             .addOption(
                 OptionType.INTEGER,
-                "max-token",
+                "max_token",
                 "최대 토큰 개수를 설정합니다.",
                 false
             )

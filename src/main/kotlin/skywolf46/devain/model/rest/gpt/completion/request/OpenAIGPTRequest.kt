@@ -96,6 +96,12 @@ data class OpenAIGPTRequest(
             }
             map["top_p"] = it
         }
+        maxTokens.tap {
+            it.checkRangeAndFatal(1..Int.MAX_VALUE) { range ->
+                return IllegalArgumentException("최대 토큰 값은 ${range.start} ~ ${range.endInclusive} 사이여야만 합니다.").left()
+            }
+            map["max_tokens"] = it
+        }
         presencePenalty.tap {
             it.checkRangeAndFatal(-2.0..2.0) { range ->
                 return IllegalArgumentException("Presence Penalty 값은 ${range.start} ~ ${range.endInclusive} 사이여야만 합니다.").left()
