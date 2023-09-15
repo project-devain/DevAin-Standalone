@@ -8,12 +8,9 @@ import org.json.simple.JSONObject
 import skywolf46.devain.model.Request
 import skywolf46.devain.util.putArray
 
-class DeepLTranslateRequest(
-    val sourceLanguage: Option<String>,
-    val targetLanguage: String,
-    val text: String
-) :
-    Request<JSONObject> {
+data class DeepLTranslateRequest(
+    val sourceLanguage: Option<String>, val targetLanguage: String, val text: String
+) : Request<JSONObject> {
     companion object {
 
         private val supportedLanguage = mapOf(
@@ -48,7 +45,8 @@ class DeepLTranslateRequest(
             "Chinese" to "ZH"
         )
 
-        fun isSupported(language: String) = supportedLanguage.containsKey(language)
+        fun isSupported(language: String) =
+            supportedLanguage.containsKey(language) || supportedLanguage.containsValue(language)
 
         fun getSupportedLanguage() = supportedLanguage.keys.toList()
     }
@@ -59,12 +57,12 @@ class DeepLTranslateRequest(
             if (!isSupported(it)) {
                 return IllegalArgumentException("Source language $it is not supported.").left()
             }
-            map["source_lang"] = supportedLanguage[it]
+            map["source_lang"] = supportedLanguage[it] ?: it
         }
         if (!isSupported(targetLanguage)) {
             return IllegalArgumentException("Target language $targetLanguage is not supported.").left()
         }
-        map["target_lang"] = supportedLanguage[targetLanguage]
+        map["target_lang"] = supportedLanguage[targetLanguage] ?: targetLanguage
         map.putArray("text", text)
         return map.right()
     }
