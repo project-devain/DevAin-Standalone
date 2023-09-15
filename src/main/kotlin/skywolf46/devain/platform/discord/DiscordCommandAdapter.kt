@@ -1,12 +1,14 @@
 package skywolf46.devain.platform.discord
 
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 class DiscordCommandAdapter(private val jda: JDA) : ListenerAdapter() {
     private val commandRegistry = mutableMapOf<String, DiscordCommand>()
+    private val modalRegistry = mutableMapOf<String, ImprovedDiscordCommand>()
 
     fun registerCommands(vararg command: DiscordCommand) {
         val updateAction = jda.updateCommands()
@@ -14,6 +16,11 @@ class DiscordCommandAdapter(private val jda: JDA) : ListenerAdapter() {
             val commandData = x.createCommandInfo()
             commandRegistry[commandData.first] = x
             updateAction.addCommands(commandData.second)
+            if (x is ImprovedDiscordCommand) {
+                x.modalId.tap {
+                    modalRegistry[it] = x
+                }
+            }
         }
         updateAction.queue()
     }
@@ -24,5 +31,11 @@ class DiscordCommandAdapter(private val jda: JDA) : ListenerAdapter() {
 
     override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
         commandRegistry[event.name]?.triggerAutoComplete(event)
+    }
+
+    override fun onModalInteraction(event: ModalInteractionEvent) {
+        println("Modal! (${event.interaction.modalId})")
+        println(modalRegistry.keys)
+        modalRegistry[event.interaction.modalId]?.onModal(event)
     }
 }
