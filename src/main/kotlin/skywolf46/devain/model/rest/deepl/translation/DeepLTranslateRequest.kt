@@ -6,6 +6,7 @@ import arrow.core.left
 import arrow.core.right
 import org.json.simple.JSONObject
 import skywolf46.devain.model.Request
+import skywolf46.devain.util.putArray
 
 class DeepLTranslateRequest(
     val sourceLanguage: Option<String>,
@@ -64,7 +65,7 @@ class DeepLTranslateRequest(
             return IllegalArgumentException("Target language $targetLanguage is not supported.").left()
         }
         map["target_lang"] = supportedLanguage[targetLanguage]
-        map["text"] = text
+        map.putArray("text", text)
         return map.right()
     }
 
