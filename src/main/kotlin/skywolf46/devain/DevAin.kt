@@ -55,7 +55,7 @@ class DevAin : KoinComponent {
 
     private fun initializeBot() {
         println("디스코드 봇 활성화중..")
-        discordBot = DiscordBot(this, inject<BotConfig>().value)
+        discordBot = DiscordBot(this, botConfig)
         initializeCommands()
     }
 
