@@ -1,7 +1,6 @@
 package skywolf46.devain.controller.commands.discord.deepl
 
 import arrow.core.None
-import arrow.core.toOption
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData

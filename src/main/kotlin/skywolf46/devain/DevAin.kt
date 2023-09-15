@@ -56,7 +56,6 @@ class DevAin : KoinComponent {
         private set
 
 
-
     internal fun init() {
         println("DevAin $version - 초기화 시작")
         startKoin {

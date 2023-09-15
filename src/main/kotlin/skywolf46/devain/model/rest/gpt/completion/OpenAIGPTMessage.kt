@@ -26,10 +26,12 @@ data class OpenAIGPTMessage(
     }
 
     override fun asJson(): Either<Throwable, JSONObject> {
-        return JSONObject(mutableMapOf(
-            "role" to role.name.lowercase(),
-            "content" to content
-        )).right()
+        return JSONObject(
+            mutableMapOf(
+                "role" to role.name.lowercase(),
+                "content" to content
+            )
+        ).right()
     }
 
     enum class Role {
@@ -43,6 +45,7 @@ data class OpenAIGPTMessage(
          * User input.
          */
         USER,
+
         /**
          * AI output.
          */

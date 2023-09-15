@@ -1,6 +1,6 @@
 package skywolf46.devain.controller.commands.discord.gpt
 
-import arrow.core.*
+import arrow.core.toOption
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent

@@ -1,6 +1,6 @@
 package skywolf46.devain.controller.commands.discord.gpt
 
-import arrow.core.*
+import arrow.core.toOption
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -80,7 +80,8 @@ class SimpleGPTCommand(
                 event.getOption("base-prompt")?.asString?.let {
                     listOf(
                         OpenAIGPTMessage(OpenAIGPTMessage.Role.ASSISTANT, it),
-                        OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString))
+                        OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString)
+                    )
                 } ?: listOf(OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString)),
                 1,
                 event.getOption("temperature")?.asDouble.toOption(),

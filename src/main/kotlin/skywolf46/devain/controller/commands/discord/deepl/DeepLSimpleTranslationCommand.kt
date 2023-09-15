@@ -21,10 +21,10 @@ class DeepLSimpleTranslationCommand : ImprovedDiscordCommand("deepl-simple", "De
         }.addOption(
             OptionType.STRING, "text", "번역할 텍스트를 지정합니다.", true
         ).addCompletableOption(
-                "source", "번역될 텍스트의 언어를 지정합니다.", false
-            ) {
-                allowedTranslation.keys.toList()
-            }
+            "source", "번역될 텍스트의 언어를 지정합니다.", false
+        ) {
+            allowedTranslation.keys.toList()
+        }
     }
 
     override suspend fun onCommand(event: SlashCommandInteractionEvent) {

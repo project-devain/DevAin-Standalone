@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.interactions.modals.Modal
-import java.lang.IllegalStateException
 
 abstract class ImprovedDiscordCommand(
     val command: String,
@@ -85,7 +84,7 @@ abstract class ImprovedDiscordCommand(
         return command to createCommandData()
     }
 
-    protected fun box(string: String) : String {
+    protected fun box(string: String): String {
         return "```$string```"
     }
 
