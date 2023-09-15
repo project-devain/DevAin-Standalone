@@ -48,6 +48,8 @@ class DeepLTranslateRequest(
         )
 
         fun isSupported(language: String) = supportedLanguage.containsKey(language)
+
+        fun getSupportedLanguage() = supportedLanguage.keys.toList()
     }
 
     override fun asJson(): Either<Throwable, JSONObject> {
