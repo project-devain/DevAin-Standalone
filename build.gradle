@@ -47,3 +47,8 @@ jar {
     }
 }
 
+processResources {
+    filesMatching("**/devain.properties") {
+        expand(rootProject.properties)
+    }
+}
