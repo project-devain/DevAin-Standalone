@@ -23,19 +23,19 @@ class GPTCompletionAPICall(private val apiKey: String, client: Option<HttpClient
     private val client = client.getOrElse { get() }
     private val parser = get<JSONParser>()
     override suspend fun call(request: OpenAIGPTRequest): Either<APIError, OpenAIGPTResponse> {
-        val prebuiltRequest = request.asJson().getOrElse { return PreconditionError(it).left() }
-        val result = client.post(OPENAI_GPT_COMPLETION_ENDPOINT) {
-            contentType(ContentType.Application.Json)
-            headers {
-                append("Authorization", "Bearer $apiKey")
-            }
-            setBody(prebuiltRequest.toJSONString())
-            println(prebuiltRequest.toJSONString())
-        }
-        if (result.status.value != 200) {
-            return StandardRestAPIError(result.status.value, result.bodyAsText()).left()
-        }
         return runCatching {
+            val prebuiltRequest = request.asJson().getOrElse { return PreconditionError(it).left() }
+            val result = client.post(OPENAI_GPT_COMPLETION_ENDPOINT) {
+                contentType(ContentType.Application.Json)
+                headers {
+                    append("Authorization", "Bearer $apiKey")
+                }
+                setBody(prebuiltRequest.toJSONString())
+                println(prebuiltRequest.toJSONString())
+            }
+            if (result.status.value != 200) {
+                return StandardRestAPIError(result.status.value, result.bodyAsText()).left()
+            }
             OpenAIGPTResponse.fromJson(parser.parseMap(result.bodyAsText())).right()
         }.getOrElse {
             UnexpectedError(it).left()
