@@ -84,8 +84,8 @@ abstract class ImprovedDiscordCommand(
         return command to createCommandData()
     }
 
-    protected fun box(string: String): String {
-        return "```$string```"
+    protected fun box(string: String, prefix: String = ""): String {
+        return "```$prefix\n$string```"
     }
 
 }
