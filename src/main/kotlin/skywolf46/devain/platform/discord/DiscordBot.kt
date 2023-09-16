@@ -16,6 +16,8 @@ class DiscordBot(devAin: DevAin, config: BotConfig) {
         DiscordCommandAdapter(jda)
     }
 
+    private val commands = mutableListOf<DiscordCommand>()
+
     init {
         kotlin.runCatching {
             jda = JDABuilder.create(config.botToken, GatewayIntent.values().toList()).addEventListeners()
@@ -29,12 +31,16 @@ class DiscordBot(devAin: DevAin, config: BotConfig) {
     }
 
     fun registerCommands(vararg command: DiscordCommand): DiscordBot {
-        commandAdapter.registerCommands(*command)
+        commands.addAll(command)
         return this
     }
 
     fun registerCommands(vararg command: ImprovedDiscordCommand): DiscordBot {
-        commandAdapter.registerCommands(*command)
+        commands.addAll(command)
         return this
+    }
+
+    internal fun finishSetup() {
+        commandAdapter.registerCommands(*commands.toTypedArray())
     }
 }

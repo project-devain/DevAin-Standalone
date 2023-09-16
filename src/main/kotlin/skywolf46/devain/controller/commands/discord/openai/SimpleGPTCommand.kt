@@ -1,27 +1,24 @@
-package skywolf46.devain.controller.commands.discord.gpt
+package skywolf46.devain.controller.commands.discord.openai
 
 import arrow.core.toOption
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
-import net.dv8tion.jda.api.interactions.commands.build.CommandData
-import net.dv8tion.jda.api.interactions.commands.build.Commands
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.utils.FileUpload
 import org.koin.core.component.get
 import skywolf46.devain.controller.api.requests.openai.GPTCompletionAPICall
-import skywolf46.devain.model.rest.gpt.completion.OpenAIGPTMessage
-import skywolf46.devain.model.rest.gpt.completion.request.OpenAIGPTRequest
-import skywolf46.devain.model.rest.gpt.completion.response.OpenAIGPTResponse
-import skywolf46.devain.platform.discord.DiscordCommand
+import skywolf46.devain.model.rest.openai.completion.OpenAIGPTMessage
+import skywolf46.devain.model.rest.openai.completion.request.OpenAIGPTRequest
+import skywolf46.devain.model.rest.openai.completion.response.OpenAIGPTResponse
 import java.text.DecimalFormat
 import kotlin.math.round
 
 class SimpleGPTCommand(
-    private val command: String,
-    private val description: String,
+    command: String,
+    description: String,
     private val model: String? = null
-) :
-    DiscordCommand() {
+) : GPTCommand(command, description) {
     companion object {
         const val DEFAULT_MODEL = "gpt-4"
         private val priceInfo = mapOf("gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002)
@@ -31,13 +28,11 @@ class SimpleGPTCommand(
 
     private val apiCall = get<GPTCompletionAPICall>()
 
-    override fun createCommandInfo(): Pair<String, CommandData> {
-        val commandData =
-            Commands.slash(command, description)
+    override fun modifyCommandData(options: SlashCommandData) {
         if (model == null) {
-            commandData.addOption(OptionType.STRING, "model", "")
+            options.addOption(OptionType.STRING, "model", "")
         }
-        commandData.addOption(OptionType.STRING, "contents", "ChatGPT-3.5에게 질문할 내용입니다.", true)
+        options.addOption(OptionType.STRING, "contents", "ChatGPT-3.5에게 질문할 내용입니다.", true)
             .addOption(
                 OptionType.NUMBER,
                 "temperature",
@@ -70,7 +65,6 @@ class SimpleGPTCommand(
             )
             .addOption(OptionType.BOOLEAN, "hide-prompt", "결과 창에서 프롬프트를 숨깁니다. 명령어 클릭은 숨겨지지 않습니다.", false)
             .addOption(OptionType.STRING, "base-prompt", "해당 프롬프트의 기반이 될 프롬프트입니다. AI는 해당 내용을 기반으로 답변을 시도합니다.", false)
-        return command to commandData
     }
 
     override suspend fun onCommand(event: SlashCommandInteractionEvent) {
@@ -96,6 +90,15 @@ class SimpleGPTCommand(
             ).onLeft {
                 hook.sendMessage(it.getErrorMessage()).queue()
             }.onRight { result ->
+                if (isEmbedCompatible(request, result)) {
+                    runCatching {
+                        hook.sendMessageEmbeds(buildEmbedded(request, result)).queue()
+                    }.onFailure { exception ->
+                        exception.printStackTrace()
+                        hook.sendMessage("${exception.javaClass.name}: ${exception.message}")
+                    }
+                    return@onRight
+                }
                 val text = buildReturnValue(event, request, result)
                 if (text.length >= 2000) {
                     hook.sendFiles(FileUpload.fromData(text.toByteArray(), "response.txt")).queue()
