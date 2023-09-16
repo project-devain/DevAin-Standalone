@@ -1,10 +1,10 @@
-package skywolf46.devain.model.rest.gpt.completion.request
+package skywolf46.devain.model.rest.openai.completion.request
 
 import arrow.core.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import skywolf46.devain.model.Request
-import skywolf46.devain.model.rest.gpt.completion.OpenAIGPTMessage
+import skywolf46.devain.model.rest.openai.completion.OpenAIGPTMessage
 import skywolf46.devain.util.checkRangeAndFatal
 
 data class OpenAIGPTRequest(
@@ -73,6 +73,10 @@ data class OpenAIGPTRequest(
      * Default value is false.
      */
     val hidePrompt: Boolean = false,
+    /**
+     * Functions that GPT can use.
+     */
+    val functions: Option<List<OpenAIFunctionDeclaration>> = None,
     /**
      * Timestamp of request.
      */
