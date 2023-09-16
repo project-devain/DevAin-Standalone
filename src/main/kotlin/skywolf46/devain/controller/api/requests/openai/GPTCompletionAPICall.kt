@@ -17,8 +17,8 @@ import skywolf46.devain.controller.api.error.StandardRestAPIError
 import skywolf46.devain.controller.api.error.UnexpectedError
 import skywolf46.devain.controller.api.requests.devain.DevAinUpdatePersistenceCountAPICall
 import skywolf46.devain.model.rest.devain.data.request.UpdateRequest
-import skywolf46.devain.model.rest.gpt.completion.request.OpenAIGPTRequest
-import skywolf46.devain.model.rest.gpt.completion.response.OpenAIGPTResponse
+import skywolf46.devain.model.rest.openai.completion.request.OpenAIGPTRequest
+import skywolf46.devain.model.rest.openai.completion.response.OpenAIGPTResponse
 import skywolf46.devain.util.parseMap
 
 private const val OPENAI_GPT_COMPLETION_ENDPOINT = "https://api.openai.com/v1/chat/completions"
