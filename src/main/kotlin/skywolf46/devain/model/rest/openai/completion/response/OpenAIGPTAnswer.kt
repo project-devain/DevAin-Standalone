@@ -1,7 +1,7 @@
-package skywolf46.devain.model.rest.gpt.completion.response
+package skywolf46.devain.model.rest.openai.completion.response
 
 import org.json.simple.JSONObject
-import skywolf46.devain.model.rest.gpt.completion.OpenAIGPTMessage
+import skywolf46.devain.model.rest.openai.completion.OpenAIGPTMessage
 
 data class OpenAIGPTAnswer(
     /**

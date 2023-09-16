@@ -1,4 +1,4 @@
-package skywolf46.devain.model.rest.gpt.completion
+package skywolf46.devain.model.rest.openai.completion
 
 import arrow.core.Either
 import arrow.core.right

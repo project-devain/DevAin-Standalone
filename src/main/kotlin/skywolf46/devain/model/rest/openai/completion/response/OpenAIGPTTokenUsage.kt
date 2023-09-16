@@ -1,4 +1,4 @@
-package skywolf46.devain.model.rest.gpt.completion.response
+package skywolf46.devain.model.rest.openai.completion.response
 
 import org.json.simple.JSONObject
 
