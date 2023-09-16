@@ -3,6 +3,8 @@ package skywolf46.devain.controller.api.requests.devain
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.koin.core.component.get
 import skywolf46.devain.SQLITE_PERSISTENCE
 import skywolf46.devain.TABLE_PERSISTENCE_COUNT
@@ -32,19 +34,21 @@ class DevAinUpdatePersistenceCountAPICall : APICall<UpdateRequest<Long>, EmptyRe
     }
 
     override suspend fun call(request: UpdateRequest<Long>): Either<APIError, EmptyResponse> {
-        return runCatching {
-            val origin = apiCall.certainly(GetRequest(request.key))
-            store.getConnection(SQLITE_PERSISTENCE)
-                .prepareStatement("replace into ${TABLE_PERSISTENCE_COUNT}(keyString, dataValue) values (?, ?)")
-                .use {
-                    it.setString(1, request.key)
-                    it.setLong(2, origin.value + request.delta)
-                    it.execute()
-                }
-            return EmptyResponse().right()
-        }.getOrElse {
-            it.printStackTrace()
-            UnexpectedError(it).left()
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                val origin = apiCall.certainly(GetRequest(request.key))
+                store.getConnection(SQLITE_PERSISTENCE)
+                    .prepareStatement("replace into ${TABLE_PERSISTENCE_COUNT}(keyString, dataValue) values (?, ?)")
+                    .use {
+                        it.setString(1, request.key)
+                        it.setLong(2, origin.value + request.delta)
+                        it.execute()
+                    }
+                EmptyResponse().right()
+            }.getOrElse {
+                it.printStackTrace()
+                UnexpectedError(it).left()
+            }
         }
     }
 
