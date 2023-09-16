@@ -1,4 +1,4 @@
-package skywolf46.devain.controller.commands.discord.gpt
+package skywolf46.devain.controller.commands.discord.openai
 
 import arrow.core.toOption
 import kotlinx.coroutines.runBlocking
@@ -11,10 +11,9 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.utils.FileUpload
 import org.koin.core.component.get
 import skywolf46.devain.controller.api.requests.openai.GPTCompletionAPICall
-import skywolf46.devain.model.rest.gpt.completion.OpenAIGPTMessage
-import skywolf46.devain.model.rest.gpt.completion.request.OpenAIGPTRequest
-import skywolf46.devain.model.rest.gpt.completion.response.OpenAIGPTResponse
-import skywolf46.devain.platform.discord.ImprovedDiscordCommand
+import skywolf46.devain.model.rest.openai.completion.OpenAIGPTMessage
+import skywolf46.devain.model.rest.openai.completion.request.OpenAIGPTRequest
+import skywolf46.devain.model.rest.openai.completion.response.OpenAIGPTResponse
 import java.text.DecimalFormat
 import kotlin.math.round
 
@@ -22,7 +21,7 @@ class ModalGPTCommand(
     command: String,
     description: String,
     private val model: String? = null
-) : ImprovedDiscordCommand(command, description, command.toOption()) {
+) : GPTCommand(command, description) {
     companion object {
         const val DEFAULT_MODEL = "gpt-4"
         private val priceInfo = mapOf("gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002)
@@ -104,6 +103,15 @@ class ModalGPTCommand(
                     apiCall.call(request).onLeft { error ->
                         hook.sendMessage(error.getErrorMessage()).queue()
                     }.onRight { result ->
+                        if (isEmbedCompatible(request, result)) {
+                            runCatching {
+                                hook.sendMessageEmbeds(buildEmbedded(request, result)).queue()
+                            }.onFailure { exception ->
+                                exception.printStackTrace()
+                                hook.sendMessage("${exception.javaClass.name}: ${exception.message}")
+                            }
+                            return@runBlocking
+                        }
                         val text = buildReturnValue(event, request, result)
                         if (text.length >= 2000) {
                             hook.sendFiles(FileUpload.fromData(text.toByteArray(), "response.txt")).queue()
