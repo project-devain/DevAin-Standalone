@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.7.21'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.20'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
@@ -19,9 +19,12 @@ dependencies {
     implementation "io.ktor:ktor-client-core:$ktor_version"
     implementation "io.ktor:ktor-client-cio:$ktor_version"
     implementation "io.ktor:ktor-client-websockets:$ktor_version"
-    // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
     implementation "io.arrow-kt:arrow-core:${rootProject.properties["arrow_version"]}"
+    implementation("org.xerial:sqlite-jdbc:3.41.2.1")
+    implementation("io.insert-koin:koin-core:3.4.0")
+    implementation 'com.knuddels:jtokkit:0.4.0'
 }
 
 test {
@@ -45,3 +48,8 @@ jar {
     }
 }
 
+processResources {
+    filesMatching("**/devain.properties") {
+        expand(rootProject.properties)
+    }
+}

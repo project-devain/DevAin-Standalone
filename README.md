@@ -1,6 +1,8 @@
-### Devain - OpenAI Discord Bot
+### Devain Standalone - OpenAI Discord Bot 
 
 Devain은 [데비안 리눅스](https://www.debian.org/)에서 이름을 가져온 [OpenAI API](https://platform.openai.com/docs/api-reference) 기반 디스코드 봇 프로젝트입니다.
+
+DevAin Standalone은 [DevAin Core](https://github.com/project-devain/DevAin-Core)과 달리, 단일 파일만으로 구동되는 시스템을 목표로 작성되었습니다.
 
 #### 무슨 기능을 합니까?
 
@@ -10,14 +12,7 @@ Devain은 OpenAI의 API를 통해 GPT 기능을 디스코드에서 사용함을 
 
 #### 무슨 명령어가 존재합니까?
 
-| 명령어                         | 설명                                                                                  |
-|-----------------------------|-------------------------------------------------------------------------------------|
-| /ask [Content]              | ChatGPT에게 질문합니다. 해당 명령어의 기본 값은 gpt-3.5-turbo입니다. 해당 명령어는 단일 세션이며, 이전 대화를 기록하지 않습니다. |
-| /ask-more [Content]         | ChatGPT에게 질문합니다. 해당 명령어의 기본 값은 gpt-4입니다. 해당 명령어는 단일 세션이며, 이전 대화를 기록하지 않습니다.         |
-| /askto [Model] [Contents]   | ChatGPT의 특정 모델에게 질문합니다.                                                             |
-| /imagine [Prompt]           | 프롬프트를 기준으로 Dall-E를 이용하여 이미지를 생성합니다.                                                 | 
-| /edit [Instruction] [Input] | OpenAI의 InstructionGPT를 이용하여 데이터를 생성합니다.                                            | 
-| /dream [engine] [Prompt]    | DreamStudio API를 이용해 이미지를 생성합니다.                                                  |
+[해당 문서](/docs/commands.md)를 확인하세요.
 
 
 ### 자주 물어는 볼 것 같은 질문
@@ -53,9 +48,7 @@ Slash Command 권한 외에는 사용하지 않는 클린한 봇입니다!
 
 #### 이 코드, 갖다가 수정해도 됩니까?
 
-표면상으로는 MIT를 넣어두었지만, 사실 이 코드는 [니 마음대로 하세요](https://en.wikipedia.org/wiki/WTFPL)™ 라이선스를 따릅니다. 
-
-이 Q&A를 읽은 사람만이 MIT 라이선스에 낚이지 않고 자유롭게 코드를 수정할 수 있을겁니다. 
+표면상으로는 MIT를 넣어두었지만, 사실 이 코드는 [니 마음대로 하세요](https://en.wikipedia.org/wiki/WTFPL)™ 라이선스를 따릅니다.
 
 
 ### 나중에 할 것 (TODO (2) - 복사본 - 복사본)
