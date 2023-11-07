@@ -3,9 +3,9 @@ package skywolf46.devain.controller.commands.discord.openai
 import arrow.core.toOption
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
-import skywolf46.devain.model.rest.openai.completion.OpenAIGPTMessage
-import skywolf46.devain.model.rest.openai.completion.request.OpenAIGPTRequest
-import skywolf46.devain.model.rest.openai.completion.response.OpenAIGPTResponse
+import skywolf46.devain.model.api.openai.completion.OpenAIGPTMessage
+import skywolf46.devain.model.api.openai.completion.OpenAIGPTRequest
+import skywolf46.devain.model.api.openai.completion.OpenAIGPTResponse
 import skywolf46.devain.platform.discord.ImprovedDiscordCommand
 import skywolf46.devain.util.TimeUtil
 import java.awt.Color
@@ -17,7 +17,7 @@ abstract class GPTCommand(command: String, description: String) :
 
     companion object {
         const val DEFAULT_MODEL = "gpt-4"
-        private val priceInfo = mapOf("gpt-4-0613" to 0.06, "gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002)
+        private val priceInfo = mapOf("gpt-4-0613" to 0.06, "gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002, "gpt-3.5-turbo-16k" to 0.002)
         private const val dollarToWonMultiplier = 1329.41
         private val decimalFormat = DecimalFormat("#,###")
     }
@@ -25,7 +25,7 @@ abstract class GPTCommand(command: String, description: String) :
     fun isEmbedCompatible(request: OpenAIGPTRequest, response: OpenAIGPTResponse): Boolean {
         val requestMessage = request.messages.find { it.role == OpenAIGPTMessage.Role.USER }!!
         val responseMessage = response.answers.last()
-        return (request.hidePrompt || requestMessage.content.length < 4096) && (responseMessage.message.content.length < 1024 - 6)
+        return (request.hidePrompt || requestMessage.content.orNull().toString().length < 4096) && (responseMessage.message.content.orNull().toString().length < 1024 - 6)
     }
 
     fun buildEmbedded(request: OpenAIGPTRequest, response: OpenAIGPTResponse): MessageEmbed {
@@ -36,11 +36,11 @@ abstract class GPTCommand(command: String, description: String) :
                 setTitle("Request complete - ${request.modelName}")
                 setColor(Color(162, 103, 181))
                 if (!request.hidePrompt) {
-                    setDescription(requestMessage.content)
+                    setDescription(requestMessage.content.orNull().toString())
                 } else {
                     setDescription("_프롬프트 숨겨짐_")
                 }
-                addField("Response", responseMessage.message.content, false)
+                addField("Response", responseMessage.message.content.orNull().toString(), false)
                 addField(
                     "Tokens",
                     box("%,d+%,d=%,d".format(
@@ -79,6 +79,9 @@ abstract class GPTCommand(command: String, description: String) :
                 }
                 request.presencePenalty.tap {
                     addField("Presence Penalty", box(it.toString()), true)
+                }
+                if (request.showFunctionTrace) {
+                    addField("Function Trace", response.stackTrace.buildStackTrace(), false)
                 }
             }
             .build()

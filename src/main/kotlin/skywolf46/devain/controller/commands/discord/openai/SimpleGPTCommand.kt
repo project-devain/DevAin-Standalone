@@ -1,5 +1,6 @@
 package skywolf46.devain.controller.commands.discord.openai
 
+import arrow.core.None
 import arrow.core.toOption
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -8,9 +9,9 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.utils.FileUpload
 import org.koin.core.component.get
 import skywolf46.devain.controller.api.requests.openai.GPTCompletionAPICall
-import skywolf46.devain.model.rest.openai.completion.OpenAIGPTMessage
-import skywolf46.devain.model.rest.openai.completion.request.OpenAIGPTRequest
-import skywolf46.devain.model.rest.openai.completion.response.OpenAIGPTResponse
+import skywolf46.devain.model.api.openai.completion.OpenAIGPTMessage
+import skywolf46.devain.model.api.openai.completion.OpenAIGPTRequest
+import skywolf46.devain.model.api.openai.completion.OpenAIGPTResponse
 import java.text.DecimalFormat
 import kotlin.math.round
 
@@ -21,7 +22,7 @@ class SimpleGPTCommand(
 ) : GPTCommand(command, description) {
     companion object {
         const val DEFAULT_MODEL = "gpt-4"
-        private val priceInfo = mapOf("gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002)
+        private val priceInfo = mapOf("gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002,"gpt-3.5-turbo-16k" to 0.002)
         private const val dollarToWonMultiplier = 1322.50
         private val decimalFormat = DecimalFormat("#,###")
     }
@@ -63,6 +64,7 @@ class SimpleGPTCommand(
                 "모델의 중복 빈도 패널티를 조정합니다. 높을수록, 같은 말(토큰)을 반복하지 않을 확률이 높아집니다. (기본 0, -2.0-2.0내의 소수)",
                 false
             )
+            .addOption(OptionType.INTEGER, "best_of", "모델의 최고 결과물 중 몇 개를 선택할지를 설정합니다. (기본 1, 1-10)", false)
             .addOption(OptionType.BOOLEAN, "hide-prompt", "결과 창에서 프롬프트를 숨깁니다. 명령어 클릭은 숨겨지지 않습니다.", false)
             .addOption(OptionType.STRING, "base-prompt", "해당 프롬프트의 기반이 될 프롬프트입니다. AI는 해당 내용을 기반으로 답변을 시도합니다.", false)
     }
@@ -72,14 +74,15 @@ class SimpleGPTCommand(
             val request = OpenAIGPTRequest(
                 model ?: event.getOption("model")!!.asString,
                 event.getOption("base-prompt")?.asString?.let {
-                    listOf(
-                        OpenAIGPTMessage(OpenAIGPTMessage.Role.ASSISTANT, it),
-                        OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString)
+                    mutableListOf(
+                        OpenAIGPTMessage(OpenAIGPTMessage.Role.ASSISTANT, it.toOption()),
+                        OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString.toOption())
                     )
-                } ?: listOf(OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString)),
+                } ?: mutableListOf(OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString.toOption())),
                 1,
                 event.getOption("temperature")?.asDouble.toOption(),
                 event.getOption("top_p")?.asDouble.toOption(),
+                event.getOption("best_of")?.asInt.toOption(),
                 event.getOption("max_token")?.asInt.toOption(),
                 event.getOption("presence_penalty")?.asDouble.toOption(),
                 event.getOption("frequency_penalty")?.asDouble.toOption(),
@@ -175,12 +178,12 @@ class SimpleGPTCommand(
     }
 
     private fun appendRequest(builder: StringBuilder, request: OpenAIGPTRequest) {
-        builder.append("**요청:** \n${request.messages.last().content}")
+        builder.append("**요청:** \n${request.messages.last().content.orNull()}")
         builder.appendNewLine(2)
     }
 
     private fun appendResult(builder: StringBuilder, result: OpenAIGPTResponse) {
-        builder.append("**응답:** \n${result.answers[0].message.content}")
+        builder.append("**응답:** \n${result.answers[0].message.content.orNull()}")
     }
 
     private fun StringBuilder.appendNewLine(count: Int = 1) {

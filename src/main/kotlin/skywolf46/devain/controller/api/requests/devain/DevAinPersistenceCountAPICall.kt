@@ -11,8 +11,8 @@ import skywolf46.devain.TABLE_PERSISTENCE_COUNT
 import skywolf46.devain.controller.api.APICall
 import skywolf46.devain.controller.api.APIError
 import skywolf46.devain.controller.api.error.UnexpectedError
-import skywolf46.devain.model.rest.devain.data.request.GetRequest
-import skywolf46.devain.model.rest.devain.data.response.GetResponse
+import skywolf46.devain.model.api.openai.GetRequest
+import skywolf46.devain.model.api.openai.GetResponse
 import skywolf46.devain.model.store.SqliteStore
 
 class DevAinPersistenceCountAPICall : APICall<GetRequest<Long>, GetResponse<Long>> {

@@ -4,7 +4,9 @@ import arrow.core.None
 import arrow.core.Option
 import arrow.core.getOrElse
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction
@@ -14,6 +16,11 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.interactions.modals.Modal
+import java.util.concurrent.locks.ReentrantLock
+import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.read
+import kotlin.concurrent.withLock
+import kotlin.concurrent.write
 
 abstract class ImprovedDiscordCommand(
     val command: String,
@@ -21,15 +28,14 @@ abstract class ImprovedDiscordCommand(
     val modalId: Option<String> = None
 ) :
     DiscordCommand() {
-    companion object {
-        @OptIn(DelicateCoroutinesApi::class)
-        private val devainCommandDispatcher = newFixedThreadPoolContext(10, "DevAin-Command Dispatcher")
-    }
 
-    private val userModalHandler = mutableMapOf<Long, (ModalInteractionEvent) -> Unit>()
+    private val userModalHandler = mutableMapOf<Long, suspend (ModalInteractionEvent) -> Unit>()
 
-    private val completions = mutableMapOf<String, (CommandAutoCompleteInteraction) -> List<String>>()
+    private val userModalHandlerLock = ReentrantLock()
 
+    private val completions = mutableMapOf<String, suspend (CommandAutoCompleteInteraction) -> List<String>>()
+
+    private val completionLock = ReentrantReadWriteLock()
 
     fun createModal(modalTitle: String, builder: (Modal.Builder) -> Unit): Modal {
         return modalId.getOrElse {
@@ -39,8 +45,10 @@ abstract class ImprovedDiscordCommand(
         }.build()
     }
 
-    protected fun SlashCommandInteraction.listenModal(modal: Modal, onModal: (ModalInteractionEvent) -> Unit) {
-        userModalHandler[user.idLong] = onModal
+    protected fun SlashCommandInteraction.listenModal(modal: Modal, onModal: suspend (ModalInteractionEvent) -> Unit) {
+        userModalHandlerLock.withLock {
+            userModalHandler[user.idLong] = onModal
+        }
         replyModal(modal).queue()
     }
 
@@ -48,18 +56,27 @@ abstract class ImprovedDiscordCommand(
         // Do nothing
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     open fun onModal(event: ModalInteractionEvent) {
-        userModalHandler.remove(event.user.idLong)?.invoke(event)
+        userModalHandlerLock.withLock {
+            userModalHandler.remove(event.user.idLong)
+        }?.apply {
+            GlobalScope.launch(Dispatchers.Default) {
+                invoke(event)
+            }
+        }
     }
 
     protected fun SlashCommandData.addCompletableOption(
         name: String,
         description: String,
         required: Boolean,
-        completion: (CommandAutoCompleteInteraction) -> List<String>
+        completion: suspend (CommandAutoCompleteInteraction) -> List<String>
     ): SlashCommandData {
         addOption(OptionType.STRING, name, description, required, true)
-        completions[name] = completion
+        completionLock.write {
+            completions[name] = completion
+        }
         return this
     }
 
@@ -67,7 +84,9 @@ abstract class ImprovedDiscordCommand(
     override suspend fun onAutoComplete(event: CommandAutoCompleteInteractionEvent) {
         if (event.focusedOption.name in completions) {
             event.replyChoiceStrings(
-                completions[event.focusedOption.name]!!.invoke(event)
+                completionLock.read {
+                    completions[event.focusedOption.name]!!
+                }.invoke(event)
                     .filter { it.startsWith(event.focusedOption.value) }
                     .let { it.subList(0, it.size.coerceAtMost(25)) })
                 .queue()

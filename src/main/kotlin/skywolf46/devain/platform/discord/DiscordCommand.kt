@@ -3,6 +3,7 @@ package skywolf46.devain.platform.discord
 import arrow.core.Either
 import arrow.core.identity
 import kotlinx.coroutines.*
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -11,17 +12,19 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import org.koin.core.component.KoinComponent
 
 abstract class DiscordCommand : KoinComponent {
-    companion object {
-        @OptIn(DelicateCoroutinesApi::class)
-        private val devainCommandDispatcher = newFixedThreadPoolContext(10, "DevAin-Command Dispatcher")
-    }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun triggerCommand(event: SlashCommandInteractionEvent) {
-        runBlocking { onCommand(event) }
+        GlobalScope.launch(Dispatchers.Default) {
+            onCommand(event)
+        }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun triggerAutoComplete(event: CommandAutoCompleteInteractionEvent) {
-        runBlocking { onAutoComplete(event) }
+        GlobalScope.launch(Dispatchers.Default) {
+            onAutoComplete(event)
+        }
     }
 
     protected open suspend fun onCommand(event: SlashCommandInteractionEvent) {
@@ -34,12 +37,13 @@ abstract class DiscordCommand : KoinComponent {
 
     abstract fun createCommandInfo(): Pair<String, CommandData>
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun SlashCommandInteractionEvent.deferEmbed(
         isEphemeral: Boolean = false,
         unit: suspend (event: SlashCommandInteractionEvent, hook: InteractionHook) -> Either<String, MessageEmbed>
     ) {
         deferReply(isEphemeral).queue { hook ->
-            CoroutineScope(devainCommandDispatcher).launch {
+            GlobalScope.launch(Dispatchers.Default) {
                 unit(this@deferEmbed, hook).onLeft {
                     hook.sendMessage(it).queue()
                 }.onRight {
@@ -49,23 +53,25 @@ abstract class DiscordCommand : KoinComponent {
         }
     }
 
-    suspend fun SlashCommandInteractionEvent.deferMessage(
+    @OptIn(DelicateCoroutinesApi::class)
+    fun SlashCommandInteractionEvent.deferMessage(
         isEphemeral: Boolean = false,
         unit: suspend (event: SlashCommandInteractionEvent, hook: InteractionHook) -> Either<String, String>
     ) {
         deferReply(isEphemeral).queue { hook ->
-            CoroutineScope(devainCommandDispatcher).launch {
+            GlobalScope.launch(Dispatchers.Default) {
                 hook.sendMessage(unit(this@deferMessage, hook).fold(::identity, ::identity)).queue()
             }
         }
     }
 
-    suspend fun SlashCommandInteractionEvent.deferError(
+    @OptIn(DelicateCoroutinesApi::class)
+    fun SlashCommandInteractionEvent.deferError(
         isEphemeral: Boolean = false,
         unit: suspend (event: SlashCommandInteractionEvent, hook: InteractionHook) -> Either<String, Unit>
     ) {
         deferReply(isEphemeral).queue { hook ->
-            CoroutineScope(devainCommandDispatcher).launch {
+            GlobalScope.launch(Dispatchers.Default) {
                 unit(this@deferError, hook).onLeft {
                     hook.sendMessage(it).queue()
                 }
@@ -73,12 +79,13 @@ abstract class DiscordCommand : KoinComponent {
         }
     }
 
-    suspend fun SlashCommandInteractionEvent.defer(
+    @OptIn(DelicateCoroutinesApi::class)
+    fun SlashCommandInteractionEvent.defer(
         isEphemeral: Boolean = false,
         unit: suspend (event: SlashCommandInteractionEvent, hook: InteractionHook) -> Unit
     ) {
         deferReply(isEphemeral).queue { hook ->
-            CoroutineScope(devainCommandDispatcher).launch {
+            GlobalScope.launch(Dispatchers.Default) {
                 unit(this@defer, hook)
             }
         }

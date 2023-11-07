@@ -11,7 +11,8 @@ import skywolf46.devain.controller.api.requests.devain.DevAinPersistenceCountAPI
 import skywolf46.devain.controller.commands.discord.deepl.DeepLKoreanTranslationCommand
 import skywolf46.devain.controller.commands.discord.deepl.DeepLSimpleTranslationCommand
 import skywolf46.devain.controller.commands.discord.deepl.DeepLTranslationCommand
-import skywolf46.devain.model.rest.devain.data.request.GetRequest
+import skywolf46.devain.controller.commands.discord.deepl.ModalDeepLKoreanTranslationCommand
+import skywolf46.devain.model.api.openai.GetRequest
 import skywolf46.devain.platform.discord.DiscordBot
 import skywolf46.devain.platform.plugin.PluginModule
 
@@ -30,6 +31,7 @@ class DeepLModule(private val apiKey: String) : PluginModule("DeepL Integration"
             DeepLTranslationCommand(),
             DeepLSimpleTranslationCommand(),
             DeepLKoreanTranslationCommand(),
+            ModalDeepLKoreanTranslationCommand()
         )
     }
 

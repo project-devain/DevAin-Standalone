@@ -1,14 +1,30 @@
 package skywolf46.devain.model.store
 
-import org.json.simple.JSONObject
-import skywolf46.devain.model.rest.openai.completion.request.OpenAIFunctionDeclaration
+import arrow.core.Option
+import arrow.core.getOrElse
+import arrow.core.toOption
+import skywolf46.devain.model.api.openai.completion.OpenAIFunctionDeclaration
+import skywolf46.devain.model.api.openai.completion.OpenAIFunctionKey
 
 class OpenAIFunctionStore {
-    private val functions = mutableMapOf<OpenAIFunctionDeclaration, (JSONObject) -> String>()
 
-    fun registerFunction(declaration: OpenAIFunctionDeclaration, function: (JSONObject) -> String) {
-        functions[declaration] = function
+    private val functions = mutableMapOf<OpenAIFunctionKey, OpenAIFunctionDeclaration>()
+    fun registerFunction(function: OpenAIFunctionDeclaration): OpenAIFunctionStore {
+        functions[function.key] = function
+        return this
     }
 
+    fun getFunction(key: OpenAIFunctionKey): Option<OpenAIFunctionDeclaration> {
+        return functions[key].toOption()
+    }
 
+    fun getFunctionOrEmpty(key: OpenAIFunctionKey): OpenAIFunctionDeclaration {
+        return getFunction(key).getOrElse {
+            OpenAIFunctionDeclaration(
+                OpenAIFunctionKey(key.functionName, OpenAIFunctionKey.FunctionFlag.INVALID),
+                "Invalid function",
+                emptyList()
+            )
+        }
+    }
 }

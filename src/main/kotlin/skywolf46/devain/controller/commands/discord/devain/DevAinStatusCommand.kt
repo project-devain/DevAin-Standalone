@@ -84,9 +84,8 @@ class DevAinStatusCommand : ImprovedDiscordCommand("status", "DevAin 봇의 상�
             EmbedBuilder()
 //                .setTitle("DevAin Standalone (${propertiesApiCall.certainly()["version"]})")
                 .apply {
-                    setTitle("DevAin Standalone (1.2.0-Grenade-Muffin)")
+                    setTitle("Plugin Statistics ($pluginName)")
                     setColor(Color.CYAN)
-                    addField("", "**Plugin Statistics ($pluginName)**", false)
                     for ((key, value) in statistics) {
                         addField("", "**${key}**", false)
                         for (statisticsColumn in value)

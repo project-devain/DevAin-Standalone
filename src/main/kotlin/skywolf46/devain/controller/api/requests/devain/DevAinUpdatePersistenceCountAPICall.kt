@@ -13,8 +13,8 @@ import skywolf46.devain.controller.api.APIError
 import skywolf46.devain.controller.api.certainly
 import skywolf46.devain.controller.api.error.UnexpectedError
 import skywolf46.devain.model.EmptyResponse
-import skywolf46.devain.model.rest.devain.data.request.GetRequest
-import skywolf46.devain.model.rest.devain.data.request.UpdateRequest
+import skywolf46.devain.model.api.openai.GetRequest
+import skywolf46.devain.model.api.openai.UpdateRequest
 import skywolf46.devain.model.store.SqliteStore
 
 class DevAinUpdatePersistenceCountAPICall : APICall<UpdateRequest<Long>, EmptyResponse> {

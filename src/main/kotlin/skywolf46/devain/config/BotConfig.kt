@@ -10,6 +10,10 @@ import java.util.*
 class BotConfig {
     val botToken: String
     val openAIToken: String
+    val cohereToken: String
+    val openWeatherToken: String
+    val googleApiToken: String
+    val googleSearchEngineId: String
     val deepLToken: String
     val dreamStudioToken: String
     val maxInput: Int
@@ -24,9 +28,13 @@ class BotConfig {
         val file = File("settings.properties")
         val defaultProperty = Properties().apply {
             setProperty("bot-token", "your-bot-token-here")
+            setProperty("cohere-token", "your-cohere-token-here")
             setProperty("openai-token", "your-openai-token-here")
             setProperty("deepl-token", "your-deepl-token-here")
             setProperty("dream-studio-token", "your-dream-studio-token-here")
+            setProperty("open-weather-token", "your-open-weather-token-here")
+            setProperty("google-api-token", "your-google-api-token-here")
+            setProperty("google-search-engine-id", "your-google-search-engine-id-here")
             setProperty("max-input", "150")
             setProperty("max-dialog-cache", "10")
             setProperty("max-user-pattern-per-server", "10")
@@ -46,6 +54,8 @@ class BotConfig {
             }
         }
         botToken = property.getProperty("bot-token") ?: throw IllegalStateException("초기화 실패; 봇 토큰이 존재하지 않습니다.")
+        cohereToken = property.getProperty("cohere-token")
+            ?: throw IllegalStateException("초기화 실패; Cohere 토큰이 존재하지 않습니다.")
         openAIToken =
             property.getProperty("openai-token") ?: throw IllegalStateException("초기화 실패; OpenAI 토큰이 존재하지 않습니다.")
         dreamStudioToken =
@@ -54,6 +64,14 @@ class BotConfig {
         deepLToken =
             property.getProperty("deepl-token")
                 ?: throw IllegalStateException("초기화 실패; DeepL 토큰이 존재하지 않습니다.")
+        openWeatherToken =
+            property.getProperty("open-weather-token")
+                ?: throw IllegalStateException("초기화 실패; OpenWeather 토큰이 존재하지 않습니다.")
+        googleApiToken =
+            property.getProperty("google-api-token") ?: throw IllegalStateException("초기화 실패; Google API 토큰이 존재하지 않습니다.")
+        googleSearchEngineId =
+            property.getProperty("google-search-engine-id")
+                ?: throw IllegalStateException("초기화 실패; Google Search Engine ID가 존재하지 않습니다.")
         maxInput = property.getProperty("max-input")?.toIntOrNull()
             ?: throw IllegalStateException("초기화 실패; 최대 입력 텍스트가 숫자가 아닙니다.")
         maxDialogCache = property.getProperty("max-dialog-cache")?.toIntOrNull()

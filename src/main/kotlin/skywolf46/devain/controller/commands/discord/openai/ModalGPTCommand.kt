@@ -1,5 +1,6 @@
 package skywolf46.devain.controller.commands.discord.openai
 
+import arrow.core.None
 import arrow.core.toOption
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -11,9 +12,9 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.utils.FileUpload
 import org.koin.core.component.get
 import skywolf46.devain.controller.api.requests.openai.GPTCompletionAPICall
-import skywolf46.devain.model.rest.openai.completion.OpenAIGPTMessage
-import skywolf46.devain.model.rest.openai.completion.request.OpenAIGPTRequest
-import skywolf46.devain.model.rest.openai.completion.response.OpenAIGPTResponse
+import skywolf46.devain.model.api.openai.completion.OpenAIGPTMessage
+import skywolf46.devain.model.api.openai.completion.OpenAIGPTRequest
+import skywolf46.devain.model.api.openai.completion.OpenAIGPTResponse
 import java.text.DecimalFormat
 import kotlin.math.round
 
@@ -24,7 +25,7 @@ class ModalGPTCommand(
 ) : GPTCommand(command, description) {
     companion object {
         const val DEFAULT_MODEL = "gpt-4"
-        private val priceInfo = mapOf("gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002)
+        private val priceInfo = mapOf("gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002,"gpt-3.5-turbo-16k" to 0.002)
         private const val dollarToWonMultiplier = 1322.50
         private val decimalFormat = DecimalFormat("#,###")
     }
@@ -76,7 +77,7 @@ class ModalGPTCommand(
             requestList.add(
                 OpenAIGPTMessage(
                     OpenAIGPTMessage.Role.ASSISTANT,
-                    event.getOption("base-prompt")!!.asString
+                    event.getOption("base-prompt")!!.asString.toOption()
                 )
             )
         }
@@ -86,6 +87,7 @@ class ModalGPTCommand(
             1,
             event.getOption("temperature")?.asDouble.toOption(),
             event.getOption("top_p")?.asDouble.toOption(),
+            None,
             event.getOption("max_token")?.asInt.toOption(),
             event.getOption("presence_penalty")?.asDouble.toOption(),
             event.getOption("frequency_penalty")?.asDouble.toOption(),
@@ -97,7 +99,7 @@ class ModalGPTCommand(
             if (it.interaction.getValue("prompt") == null) {
                 return@listenModal
             }
-            requestList.add(OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, it.interaction.getValue("prompt")!!.asString))
+            requestList.add(OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, it.interaction.getValue("prompt")!!.asString.toOption()))
             it.deferReply().queue { hook ->
                 runBlocking {
                     apiCall.call(request).onLeft { error ->
@@ -190,12 +192,12 @@ class ModalGPTCommand(
     }
 
     private fun appendRequest(builder: StringBuilder, request: OpenAIGPTRequest) {
-        builder.append("**요청:** \n${request.messages.last().content}")
+        builder.append("**요청:** \n${request.messages.last().content.orNull()}")
         builder.appendNewLine(2)
     }
 
     private fun appendResult(builder: StringBuilder, result: OpenAIGPTResponse) {
-        builder.append("**응답:** \n${result.answers[0].message.content}")
+        builder.append("**응답:** \n${result.answers[0].message.content.orNull()}")
     }
 
     private fun StringBuilder.appendNewLine(count: Int = 1) {

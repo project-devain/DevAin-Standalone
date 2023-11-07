@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import org.koin.core.component.inject
 import skywolf46.devain.controller.api.requests.openai.DallEAPICall
-import skywolf46.devain.model.rest.openai.dalle.DallERequest
+import skywolf46.devain.model.api.openai.dalle.DallERequest
 import skywolf46.devain.platform.discord.ImprovedDiscordCommand
 import java.awt.Color
 
@@ -35,7 +35,7 @@ class DallEGenerationCommand : ImprovedDiscordCommand("dalle", "OpenAI DallE를 
             apiCall.call(DallERequest(
                 prompt,
                 event.getOption("size")?.asString?.let { DallERequest.ImageSize.valueOf(it.uppercase()) }
-                    ?: DallERequest.ImageSize.X256,
+                    ?: DallERequest.ImageSize.X1024,
                 DallERequest.ResponseType.URL,
                 1
             )).onLeft {
