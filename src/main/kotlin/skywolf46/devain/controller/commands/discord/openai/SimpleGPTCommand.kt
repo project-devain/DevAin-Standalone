@@ -1,6 +1,5 @@
 package skywolf46.devain.controller.commands.discord.openai
 
-import arrow.core.None
 import arrow.core.toOption
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -178,12 +177,12 @@ class SimpleGPTCommand(
     }
 
     private fun appendRequest(builder: StringBuilder, request: OpenAIGPTRequest) {
-        builder.append("**요청:** \n${request.messages.last().content.orNull()}")
+        builder.append("**요청:** \n${request.messages.last().content.find { it.first == "text" }?.second}")
         builder.appendNewLine(2)
     }
 
     private fun appendResult(builder: StringBuilder, result: OpenAIGPTResponse) {
-        builder.append("**응답:** \n${result.answers[0].message.content.orNull()}")
+        builder.append("**응답:** \n${result.answers[0].message.content.find { it.first == "text" }?.second}")
     }
 
     private fun StringBuilder.appendNewLine(count: Int = 1) {
