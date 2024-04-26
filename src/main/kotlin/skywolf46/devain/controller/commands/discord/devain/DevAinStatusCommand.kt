@@ -40,7 +40,7 @@ class DevAinStatusCommand : ImprovedDiscordCommand("status", "DevAin 봇의 상�
                 (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()).toDouble() / 1024.0 / 1024.0
             EmbedBuilder()
 //                .setTitle("DevAin Standalone (${propertiesApiCall.certainly()["version"]})")
-                .setTitle("DevAin Standalone (1.2.0-Grenade-Muffin)")
+                .setTitle("DevAin Standalone (1.3.0 - Radioactive Emmer Bread)")
                 .setColor(Color.CYAN)
                 .addField(
                     "업타임",

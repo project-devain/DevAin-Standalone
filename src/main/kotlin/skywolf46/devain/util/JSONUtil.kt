@@ -71,7 +71,12 @@ fun JSONObject.putNotNull(key: String, data: Any?) {
     }
 }
 
-inline fun JSONObject.putNotNullOrFatal(key: String, data: Double?, range: ClosedRange<Double>, fatal: (ClosedRange<Double>) -> Unit) {
+inline fun JSONObject.putNotNullOrFatal(
+    key: String,
+    data: Double?,
+    range: ClosedRange<Double>,
+    fatal: (ClosedRange<Double>) -> Unit
+) {
     if (data == null) return
     put(key, data.checkRangeAndFatal(range, fatal))
 }

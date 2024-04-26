@@ -13,7 +13,7 @@ class EvEOnlineStatusDeclaration : OpenAIFunctionDeclaration(
     OpenAIFunctionKey("eve-status", OpenAIFunctionKey.FunctionFlag.BUILT_IN),
     "EvE Online(이브 온라인)의 현재 상태를 불러옵니다.",
     listOf()
-){
+) {
 
     private val apiCall by inject<EvEOnlineStatusAPICall>()
 

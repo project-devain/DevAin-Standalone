@@ -25,7 +25,7 @@ open class OpenAIFunctionDeclaration(
     val parameterSchema: List<OpenAIParameterSchema>
 ) : Request<JSONObject> {
 
-    open suspend fun call(param: JSONObject) : JSONObject {
+    open suspend fun call(param: JSONObject): JSONObject {
         return JSONObject()
     }
 
@@ -40,7 +40,8 @@ open class OpenAIFunctionDeclaration(
     private fun buildParameterJson(): JSONObject {
         return JSONObject().apply {
             put("type", "object")
-            putMap("properties",
+            putMap(
+                "properties",
                 *parameterSchema.map {
                     it.parameterName to it.serialize().getOrNull()!!
                 }.toTypedArray()

@@ -16,7 +16,10 @@ class OpenWeatherForecastAPICall(private val apiKey: String, client: Option<Http
         "https://api.openweathermap.org/data/2.5/forecast?q=%s&appid=%s".format(it.key, apiKey)
     }, client) {
 
-    override suspend fun parseResult(request: GetRequest<String>, response: JSONObject): Either<APIError, GenericJSONObjectResponse> {
+    override suspend fun parseResult(
+        request: GetRequest<String>,
+        response: JSONObject
+    ): Either<APIError, GenericJSONObjectResponse> {
         return GenericJSONObjectResponse(response).right()
     }
 }

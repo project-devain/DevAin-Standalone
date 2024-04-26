@@ -3,7 +3,6 @@ package skywolf46.devain.model.api.openai.completion.functions
 import arrow.core.getOrElse
 import org.json.simple.JSONObject
 import org.koin.core.component.inject
-import org.koin.java.KoinJavaComponent.inject
 import skywolf46.devain.apicall.networking.GenericJSONObjectResponse
 import skywolf46.devain.controller.api.requests.arxiv.ArxivSearchAPICall
 import skywolf46.devain.model.api.arxiv.ArxivRequest

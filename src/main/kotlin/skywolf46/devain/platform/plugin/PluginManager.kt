@@ -3,7 +3,6 @@ package skywolf46.devain.platform.plugin
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.context.loadKoinModules
-import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import skywolf46.devain.model.data.config.ConfigDocumentRoot
 import java.io.File

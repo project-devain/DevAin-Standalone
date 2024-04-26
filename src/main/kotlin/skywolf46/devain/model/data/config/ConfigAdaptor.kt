@@ -6,5 +6,5 @@ import java.io.OutputStream
 interface ConfigAdaptor {
     fun serializeTo(stream: OutputStream, data: Map<String, Any>)
 
-    fun serializeFrom(stream: InputStream) : Map<String, Any>
+    fun serializeFrom(stream: InputStream): Map<String, Any>
 }

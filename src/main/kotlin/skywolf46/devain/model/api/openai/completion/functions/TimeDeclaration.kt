@@ -13,7 +13,7 @@ class TimeDeclaration : OpenAIFunctionDeclaration(
     private val timeFormat = SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초")
 
     override suspend fun call(param: JSONObject): JSONObject {
-        return  JSONObject().apply {
+        return JSONObject().apply {
             put("time", timeFormat.format(System.currentTimeMillis()))
         }
     }

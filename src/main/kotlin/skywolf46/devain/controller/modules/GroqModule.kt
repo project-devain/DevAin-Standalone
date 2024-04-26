@@ -21,7 +21,7 @@ class GroqModule : PluginModule("Groq Integration") {
 
 
     override fun onInitialize() {
-        document.fetchSharedDocument<APITokenElement>(pluginName) {config ->
+        document.fetchSharedDocument<APITokenElement>(pluginName) { config ->
             loadKoinModules(module {
                 single { GroqAPICall(config.apiToken) }
             })

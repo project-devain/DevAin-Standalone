@@ -21,7 +21,12 @@ abstract class AnnotatedParameterDiscordCommand<T : Any>(
 
     override fun modifyCommandData(options: SlashCommandData) {
         for ((_, data) in parsed.parameters) {
-            options.addOption(data.type.option, data.name, data.description.replaceAllArgument(onCommandParameterDataRequested()), data.required)
+            options.addOption(
+                data.type.option,
+                data.name,
+                data.description.replaceAllArgument(onCommandParameterDataRequested()),
+                data.required
+            )
         }
     }
 
@@ -36,7 +41,7 @@ abstract class AnnotatedParameterDiscordCommand<T : Any>(
 
     abstract suspend fun onParameterCommand(event: CommandEvent, data: T)
 
-    open fun onCommandParameterDataRequested() : Map<String, String> = emptyMap()
+    open fun onCommandParameterDataRequested(): Map<String, String> = emptyMap()
 
     private class ParsedParameter(private val cls: KClass<*>) {
         val parameters = mutableMapOf<KParameter, ParsedParameterInfo>()
@@ -109,7 +114,10 @@ abstract class AnnotatedParameterDiscordCommand<T : Any>(
         })
     }
 
-    data class CommandEvent(val origin: SlashCommandInteractionEvent, val executedOn: Long = System.currentTimeMillis()) {
-        fun elapsed() : Long = (System.currentTimeMillis() - executedOn)
+    data class CommandEvent(
+        val origin: SlashCommandInteractionEvent,
+        val executedOn: Long = System.currentTimeMillis()
+    ) {
+        fun elapsed(): Long = (System.currentTimeMillis() - executedOn)
     }
 }

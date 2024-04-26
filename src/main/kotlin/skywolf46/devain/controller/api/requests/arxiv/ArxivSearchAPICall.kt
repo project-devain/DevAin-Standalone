@@ -1,6 +1,9 @@
 package skywolf46.devain.controller.api.requests.arxiv
 
-import arrow.core.*
+import arrow.core.Either
+import arrow.core.None
+import arrow.core.Option
+import arrow.core.right
 import io.ktor.client.*
 import org.w3c.dom.Document
 import org.w3c.dom.Node
