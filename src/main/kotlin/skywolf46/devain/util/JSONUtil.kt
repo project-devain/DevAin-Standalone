@@ -64,3 +64,20 @@ fun JSONArray.addMap(vararg data: Pair<String, Any>): JSONArray {
     })
     return this
 }
+
+fun JSONObject.putNotNull(key: String, data: Any?) {
+    if (data != null) {
+        put(key, data)
+    }
+}
+
+inline fun JSONObject.putNotNullOrFatal(key: String, data: Double?, range: ClosedRange<Double>, fatal: (ClosedRange<Double>) -> Unit) {
+    if (data == null) return
+    put(key, data.checkRangeAndFatal(range, fatal))
+}
+
+
+inline fun JSONObject.putNotNullOrFatal(key: String, data: Int?, range: IntRange, fatal: (ClosedRange<Int>) -> Unit) {
+    if (data == null) return
+    put(key, data.checkRangeAndFatal(range, fatal))
+}
