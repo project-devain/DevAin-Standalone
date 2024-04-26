@@ -7,8 +7,10 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
+import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction
@@ -16,6 +18,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.utils.FileUpload
 import java.util.concurrent.locks.ReentrantLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
@@ -107,4 +110,15 @@ abstract class ImprovedDiscordCommand(
         return "```$prefix\n$string```"
     }
 
+    fun InteractionHook.sendMessageOrEmbed(embedThreshold: Int, text: String, embed: (EmbedBuilder) -> Unit) {
+        if (text.length >= 2000) {
+            sendFiles(FileUpload.fromData(text.toByteArray(), "result.txt")).queue()
+            return
+        }
+        if (text.length >= embedThreshold) {
+            sendMessage(text).queue()
+            return
+        }
+        sendMessageEmbeds(EmbedBuilder().apply(embed).build()).queue()
+    }
 }
