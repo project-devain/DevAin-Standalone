@@ -214,13 +214,13 @@ class TestGPTCommand(
     private fun appendRequest(builder: StringBuilder, request: OpenAIGPTRequest) {
 
         val requestMessage = request.messages.find { it.role == OpenAIGPTMessage.Role.USER }!!
-        builder.append("**요청:** \n${requestMessage.content.orNull()!!}")
+        builder.append("**요청:** \n${requestMessage.content.find { it.first == "text" }?.second}")
         builder.appendNewLine(2)
     }
 
     private fun appendResult(builder: StringBuilder, result: OpenAIGPTResponse) {
         val responseMessage = result.answers.last()
-        builder.append("**응답:** \n${responseMessage.message.content.orNull()!!}")
+        builder.append("**응답:** \n${responseMessage.message.content.find { it.first == "text" }?.second}")
     }
 
     private fun StringBuilder.appendNewLine(count: Int = 1) {
