@@ -1,4 +1,4 @@
-package skywolf46.devain.controller.api.cohere
+package skywolf46.devain.controller.api.requests.cohere
 
 import arrow.core.Either
 import arrow.core.None
@@ -10,8 +10,8 @@ import io.ktor.http.*
 import org.json.simple.JSONObject
 import org.koin.core.component.inject
 import skywolf46.devain.KEY_COHERE_GENERATION_PROCEED_COUNT
-import skywolf46.devain.controller.api.APIError
-import skywolf46.devain.controller.api.RESTAPICall
+import skywolf46.devain.apicall.APIError
+import skywolf46.devain.apicall.RESTAPICall
 import skywolf46.devain.controller.api.requests.devain.DevAinUpdatePersistenceCountAPICall
 import skywolf46.devain.model.api.cohere.CohereGenerationRequest
 import skywolf46.devain.model.api.cohere.CohereGenerationResponse
