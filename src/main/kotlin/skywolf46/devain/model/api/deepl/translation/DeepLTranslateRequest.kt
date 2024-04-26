@@ -5,7 +5,7 @@ import arrow.core.Option
 import arrow.core.left
 import arrow.core.right
 import org.json.simple.JSONObject
-import skywolf46.devain.model.Request
+import skywolf46.devain.apicall.networking.Request
 import skywolf46.devain.util.putArray
 
 data class DeepLTranslateRequest(
@@ -51,7 +51,7 @@ data class DeepLTranslateRequest(
         fun getSupportedLanguage() = supportedLanguage.keys.toList()
     }
 
-    override fun asJson(): Either<Throwable, JSONObject> {
+    override fun serialize(): Either<Throwable, JSONObject> {
         val map = JSONObject()
         sourceLanguage.tap {
             if (!isSupported(it)) {

@@ -3,8 +3,8 @@ package skywolf46.devain.model.api.openai.completion.functions
 import arrow.core.getOrElse
 import org.json.simple.JSONObject
 import org.koin.core.component.inject
+import skywolf46.devain.apicall.networking.GetRequest
 import skywolf46.devain.controller.api.requests.openweather.OpenWeatherAPICall
-import skywolf46.devain.model.api.openai.GetRequest
 import skywolf46.devain.model.api.openai.OpenAIParameterSchema
 import skywolf46.devain.model.api.openai.completion.OpenAIFunctionDeclaration
 import skywolf46.devain.model.api.openai.completion.OpenAIFunctionKey

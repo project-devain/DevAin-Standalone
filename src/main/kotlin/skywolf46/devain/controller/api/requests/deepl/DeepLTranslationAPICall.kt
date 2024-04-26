@@ -7,9 +7,9 @@ import org.json.simple.JSONObject
 import org.koin.core.component.get
 import skywolf46.devain.KEY_DEEPL_PROCEED_COUNT
 import skywolf46.devain.KEY_DEEPL_PROCEED_TOKEN
-import skywolf46.devain.controller.api.APIError
-import skywolf46.devain.controller.api.RESTAPICall
-import skywolf46.devain.controller.api.error.UnexpectedError
+import skywolf46.devain.apicall.APIError
+import skywolf46.devain.apicall.RESTAPICall
+import skywolf46.devain.apicall.errors.UnexpectedError
 import skywolf46.devain.controller.api.requests.devain.DevAinUpdatePersistenceCountAPICall
 import skywolf46.devain.model.api.deepl.translation.DeepLTranslateRequest
 import skywolf46.devain.model.api.deepl.translation.DeepLTranslateResponse

@@ -82,21 +82,24 @@ class ImageGPTCommand(
                 event.getOption("base-prompt")?.asString?.let {
                     mutableListOf(
                         OpenAIGPTMessage(OpenAIGPTMessage.Role.ASSISTANT, it.toOption()),
-                        OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString.toOption()),
-                        OpenAIGPTMessage(
-                            OpenAIGPTMessage.Role.IMAGE_URL,
-                            event.getOption("image")!!.asAttachment.url.toOption()
-                        )
+                        OpenAIGPTMessage(OpenAIGPTMessage.Role.USER,listOf(
+                            "text" to event.getOption("contents")!!.asString,
+                            "image_url" to event.getOption("image")!!.asAttachment.url
+                        ))
                     )
                 } ?: mutableListOf(
-                    OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString.toOption()),
-                    OpenAIGPTMessage(OpenAIGPTMessage.Role.IMAGE_URL, event.getOption("image")!!.asAttachment.url.toOption())
+                    OpenAIGPTMessage(
+                        OpenAIGPTMessage.Role.USER, listOf(
+                            "text" to event.getOption("contents")!!.asString,
+                            "image_url" to event.getOption("image")!!.asAttachment.url
+                        )
+                    )
                 ),
                 1,
                 event.getOption("temperature")?.asDouble.toOption(),
                 event.getOption("top_p")?.asDouble.toOption(),
                 event.getOption("best_of")?.asInt.toOption(),
-                event.getOption("max_token")?.asInt.toOption(),
+                (event.getOption("max_token")?.asInt ?: 4096).toOption(),
                 event.getOption("presence_penalty")?.asDouble.toOption(),
                 event.getOption("frequency_penalty")?.asDouble.toOption(),
                 event.getOption("hide-prompt")?.asBoolean ?: false
@@ -191,12 +194,12 @@ class ImageGPTCommand(
     }
 
     private fun appendRequest(builder: StringBuilder, request: OpenAIGPTRequest) {
-        builder.append("**요청:** \n${request.messages.last().content.orNull()}")
+        builder.append("**요청:** \n${request.messages.last().content.find { it.first == "text" }?.second }}")
         builder.appendNewLine(2)
     }
 
     private fun appendResult(builder: StringBuilder, result: OpenAIGPTResponse) {
-        builder.append("**응답:** \n${result.answers[0].message.content.orNull()}")
+        builder.append("**응답:** \n${result.answers[0].message.content.find { it.first == "text" }?.second}")
     }
 
     private fun StringBuilder.appendNewLine(count: Int = 1) {

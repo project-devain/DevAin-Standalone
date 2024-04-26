@@ -4,8 +4,8 @@ import arrow.core.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.koin.core.component.get
-import skywolf46.devain.model.Request
-import skywolf46.devain.model.store.OpenAIFunctionStore
+import skywolf46.devain.apicall.networking.Request
+import skywolf46.devain.model.data.store.OpenAIFunctionStore
 import skywolf46.devain.util.checkRangeAndFatal
 
 data class OpenAIGPTRequest(
@@ -93,7 +93,7 @@ data class OpenAIGPTRequest(
     /**
      * Struct JSONObject from this request.
      */
-    override fun asJson(): Either<Throwable, JSONObject> {
+    override fun serialize(): Either<Throwable, JSONObject> {
         val map = JSONObject()
         temperature.tap {
             it.checkRangeAndFatal(0.0..2.0) { range ->
@@ -130,7 +130,7 @@ data class OpenAIGPTRequest(
                 if (functionStore.getFunction(key).isEmpty())
                     return IllegalArgumentException("존재하지 않는 함수 키입니다. ($key)").left()
             }
-            map["functions"] = it.map { key -> functionStore.getFunction(key).orNull()!!.asJson().getOrNull()!! }
+            map["functions"] = it.map { key -> functionStore.getFunction(key).orNull()!!.serialize().getOrNull()!! }
         }
         bestOf.tap {
             if (it > 10) {
@@ -145,7 +145,7 @@ data class OpenAIGPTRequest(
 //            return IllegalArgumentException("마지막 메시지는 USER 혹은 FUNCTION 역할이어야 합니다.").left()
 //        }
         map["messages"] = JSONArray().apply {
-            addAll(messages.map { it.asJson().getOrNull()!! })
+            addAll(messages.map { it.serialize().getOrNull()!! })
         }
         map["n"] = generateAmount
 

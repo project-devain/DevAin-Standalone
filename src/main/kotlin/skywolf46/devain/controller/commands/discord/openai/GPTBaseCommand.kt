@@ -1,6 +1,9 @@
 package skywolf46.devain.controller.commands.discord.openai
 
-import arrow.core.*
+import arrow.core.None
+import arrow.core.Option
+import arrow.core.getOrElse
+import arrow.core.toOption
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -106,8 +109,9 @@ open class GPTBaseCommand(
     fun isEmbedCompatible(request: OpenAIGPTRequest, response: OpenAIGPTResponse): Boolean {
         val requestMessage = request.messages.find { it.role == OpenAIGPTMessage.Role.USER }!!
         val responseMessage = response.answers.last()
-        return (request.hidePrompt || requestMessage.content.orNull()
-            .toString().length < 4096) && (responseMessage.message.content.orNull().toString().length < 1024 - 6)
+        return (request.hidePrompt || requestMessage.content.find { it.first == "text" }?.second
+            .toString().length < 4096) && ((responseMessage.message.content.find { it.first == "text" }?.second?.length
+            ?: 0) < 1024 - 6)
     }
 
     final override fun modifyCommandData(options: SlashCommandData) {

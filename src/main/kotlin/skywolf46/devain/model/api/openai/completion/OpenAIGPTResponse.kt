@@ -2,7 +2,7 @@ package skywolf46.devain.model.api.openai.completion
 
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
-import skywolf46.devain.model.Response
+import skywolf46.devain.apicall.networking.Response
 
 data class OpenAIGPTResponse(
     /**

@@ -8,12 +8,12 @@ import kotlinx.coroutines.withContext
 import org.koin.core.component.get
 import skywolf46.devain.SQLITE_PERSISTENCE
 import skywolf46.devain.TABLE_PERSISTENCE_COUNT
-import skywolf46.devain.controller.api.APICall
-import skywolf46.devain.controller.api.APIError
-import skywolf46.devain.controller.api.error.UnexpectedError
-import skywolf46.devain.model.api.openai.GetRequest
-import skywolf46.devain.model.api.openai.GetResponse
-import skywolf46.devain.model.store.SqliteStore
+import skywolf46.devain.apicall.APICall
+import skywolf46.devain.apicall.APIError
+import skywolf46.devain.apicall.errors.UnexpectedError
+import skywolf46.devain.apicall.networking.GetRequest
+import skywolf46.devain.apicall.networking.GetResponse
+import skywolf46.devain.model.data.store.SqliteStore
 
 class DevAinPersistenceCountAPICall : APICall<GetRequest<Long>, GetResponse<Long>> {
     private val store = get<SqliteStore>()
