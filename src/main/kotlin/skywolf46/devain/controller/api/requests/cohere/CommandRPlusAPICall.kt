@@ -1,0 +1,45 @@
+package skywolf46.devain.controller.api.requests.cohere
+
+import arrow.core.Either
+import arrow.core.None
+import arrow.core.Option
+import arrow.core.right
+import io.ktor.client.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import org.json.simple.JSONObject
+import org.koin.core.component.inject
+import skywolf46.devain.KEY_COMMAND_R_PLUS_GENERATION_PROCEED_COUNT
+import skywolf46.devain.apicall.APIError
+import skywolf46.devain.apicall.RESTAPICall
+import skywolf46.devain.controller.api.requests.devain.DevAinUpdatePersistenceCountAPICall
+import skywolf46.devain.model.api.openai.UpdateRequest
+import skywolf46.devain.model.api.rplus.RPlusRequest
+import skywolf46.devain.model.api.rplus.RPlusResponse
+
+class CommandRPlusAPICall(val apiKey: String, client: Option<HttpClient> = None) :
+    RESTAPICall<RPlusRequest, RPlusResponse>({
+        "https://api.cohere.ai/v1/chat"
+    }, client, HttpMethod.Post) {
+
+    private val updateCall by inject<DevAinUpdatePersistenceCountAPICall>()
+
+    override suspend fun parseResult(
+        request: RPlusRequest,
+        response: JSONObject
+    ): Either<APIError, RPlusResponse> {
+        return RPlusResponse.fromJson(response).apply {
+            updateCall.call(UpdateRequest(KEY_COMMAND_R_PLUS_GENERATION_PROCEED_COUNT, 1L))
+        }.right()
+    }
+
+    override fun HeadersBuilder.applyCredential() {
+        append("authorization", "Bearer $apiKey")
+    }
+
+    override suspend fun parseHttpError(request: RPlusRequest, response: HttpResponse, errorCode: Int): APIError {
+        println(response.headers)
+        return super.parseHttpError(request, response, errorCode)
+    }
+
+}

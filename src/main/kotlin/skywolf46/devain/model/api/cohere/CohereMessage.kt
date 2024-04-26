@@ -1,6 +1,5 @@
 package skywolf46.devain.model.api.cohere
 
-import arrow.core.Option
 import org.json.simple.JSONObject
 
 data class CohereMessage(val id: String, val text: String) {
