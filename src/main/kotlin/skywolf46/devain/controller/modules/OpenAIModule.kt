@@ -4,8 +4,11 @@ import org.koin.core.component.inject
 import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
 import skywolf46.devain.*
-import skywolf46.devain.config.BotConfig
-import skywolf46.devain.controller.api.certainly
+import skywolf46.devain.annotations.config.ConfigDefault
+import skywolf46.devain.annotations.config.MarkConfigElement
+import skywolf46.devain.apicall.certainly
+import skywolf46.devain.apicall.networking.GetRequest
+import skywolf46.devain.controller.api.requests.arxiv.ArxivSearchAPICall
 import skywolf46.devain.controller.api.requests.devain.DevAinPersistenceCountAPICall
 import skywolf46.devain.controller.api.requests.eve.EvEOnlineStatusAPICall
 import skywolf46.devain.controller.api.requests.google.GoogleSearchAPICall
@@ -14,27 +17,15 @@ import skywolf46.devain.controller.api.requests.openai.GPTCompletionAPICall
 import skywolf46.devain.controller.api.requests.openweather.OpenWeatherAPICall
 import skywolf46.devain.controller.api.requests.openweather.OpenWeatherForecastAPICall
 import skywolf46.devain.controller.commands.discord.openai.*
-import skywolf46.devain.model.api.openai.GetRequest
 import skywolf46.devain.model.api.openai.completion.functions.*
-import skywolf46.devain.model.store.OpenAIFunctionStore
-import skywolf46.devain.model.store.OpenAIGPTGroupStore
-import skywolf46.devain.model.store.OpenAIWorldStore
+import skywolf46.devain.model.data.config.ConfigElement
+import skywolf46.devain.model.data.config.fetchSharedDocument
+import skywolf46.devain.model.data.store.OpenAIFunctionStore
 import skywolf46.devain.platform.discord.DiscordBot
 import skywolf46.devain.platform.plugin.PluginModule
 import skywolf46.devain.util.TimeUtil
 
-class OpenAIModule(private val config: BotConfig, private val apiKey: String) : PluginModule("OpenAI Integration") {
-    private val module = module {
-        single { GPTCompletionAPICall(apiKey) }
-        single { DallEAPICall(apiKey) }
-        single { OpenWeatherAPICall(config.openWeatherToken) }
-        single { OpenWeatherForecastAPICall(config.openWeatherToken) }
-        single { OpenAIFunctionStore() }
-        single { EvEOnlineStatusAPICall() }
-        single { GoogleSearchAPICall(config.googleApiToken, config.googleSearchEngineId) }
-        single { OpenAIGPTGroupStore() }
-        single { OpenAIWorldStore() }
-    }
+class OpenAIModule : PluginModule("OpenAI Integration") {
 
     private val apiCall by inject<DevAinPersistenceCountAPICall>()
 
@@ -48,13 +39,26 @@ class OpenAIModule(private val config: BotConfig, private val apiKey: String) : 
         GoogleSearchDeclaration(),
         OpenWeatherCallDeclaration(),
         OpenWeatherForecastDeclaration(),
+        ArxivSearchDeclaration(),
         TimeDeclaration()
     )
 
     override fun onInitialize() {
-        loadKoinModules(module)
-        initFunctions()
-        registerCommands()
+        document.fetchSharedDocument<OpenAIConfigElement>(pluginName) { config ->
+            loadKoinModules(module {
+                single { GPTCompletionAPICall(config.openAIKey) }
+                single { DallEAPICall(config.openAIKey) }
+                single { OpenWeatherAPICall(config.openWeatherKey) }
+                single { OpenWeatherForecastAPICall(config.openWeatherKey) }
+                single { OpenAIFunctionStore() }
+                single { EvEOnlineStatusAPICall() }
+                single { GoogleSearchAPICall(config.googleApiKey, config.googleSearchEngineId) }
+                single { ArxivSearchAPICall() }
+            })
+
+            initFunctions()
+            registerCommands()
+        }
     }
 
     private fun initFunctions() {
@@ -82,10 +86,15 @@ class OpenAIModule(private val config: BotConfig, private val apiKey: String) : 
                 "gpt-4"
             ),
 
+//            SimpleGPTCommand(
+//                "ask-fast",
+//                "GPT-4-0613에게 질문합니다. GPT-4는 느리지만, 조금 더 논리적인 답변을 기대할 수 있습니다.",
+//                "gpt-4-0613"
+//            ),
             SimpleGPTCommand(
                 "ask-fast",
-                "GPT-4-0613에게 질문합니다. GPT-4는 느리지만, 조금 더 논리적인 답변을 기대할 수 있습니다.",
-                "gpt-4-0613"
+                "GPT-4-0125에게 질문합니다. GPT-4는 느리지만, 조금 더 논리적인 답변을 기대할 수 있습니다.",
+                "gpt-4-0125-preview"
             ),
 
             SimpleGPTCommand(
@@ -99,8 +108,16 @@ class OpenAIModule(private val config: BotConfig, private val apiKey: String) : 
                 "ask-vision",
                 "GPT-4-vision-preview에게 질문합니다. GPT-4는 느리지만, 조금 더 논리적인 답변을 기대할 수 있습니다.",
                 "gpt-4-vision-preview"
+            ),
+
+            ImageGPTCommand(
+                "ask-vision-exp",
+                "GPT-4-1106-vision-preview에게 질문합니다. GPT-4는 느리지만, 조금 더 논리적인 답변을 기대할 수 있습니다.",
+                "gpt-4-1106-vision-preview"
+            ),
+
+
             )
-        )
     }
 
     private fun registerModalCommands() {
@@ -128,13 +145,9 @@ class OpenAIModule(private val config: BotConfig, private val apiKey: String) : 
 
     private fun registerTestFeatureCommands() {
         discordBot.registerCommands(
-
-
             TestGPTCommand("test-gpt", "펑션을 사용하는 실험적인 GPT 명령입니다.", "gpt-3.5-turbo-16k"),
-
-            GPTFunctionCommand(),
+            ArxivGPTCommand("arxiv-gpt", "ArXiv 검색을 사용하는 실험적인 GPT 명령입니다.", "gpt-4-turbo"),
             DallEGenerationCommand(),
-            GPTGroupCommand()
         )
     }
 
@@ -177,4 +190,19 @@ class OpenAIModule(private val config: BotConfig, private val apiKey: String) : 
     override fun getVersion(): String {
         return "built-in"
     }
+
+    data class OpenAIConfigElement(
+        @ConfigDefault.String("YOUR-API-TOKEN-HERE")
+        @MarkConfigElement("OpenAI API Key")
+        val openAIKey: String,
+        @ConfigDefault.String("YOUR-API-TOKEN-HERE")
+        @MarkConfigElement("OpenWeather API Key")
+        val openWeatherKey: String,
+        @ConfigDefault.String("YOUR-API-TOKEN-HERE")
+        @MarkConfigElement("Google API Key")
+        val googleApiKey: String,
+        @ConfigDefault.String("YOUR-API-TOKEN-HERE")
+        @MarkConfigElement("Google Search Engine ID")
+        val googleSearchEngineId: String,
+    ) : ConfigElement
 }
