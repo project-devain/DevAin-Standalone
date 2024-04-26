@@ -1,4 +1,4 @@
-package skywolf46.devain.model.store
+package skywolf46.devain.model.data.store
 
 import arrow.core.Option
 import arrow.core.getOrElse
