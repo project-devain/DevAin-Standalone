@@ -21,7 +21,7 @@ class SimpleGPTCommand(
 ) : GPTCommand(command, description) {
     companion object {
         const val DEFAULT_MODEL = "gpt-4"
-        private val priceInfo = mapOf("gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002,"gpt-3.5-turbo-16k" to 0.002)
+        private val priceInfo = mapOf("gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002, "gpt-3.5-turbo-16k" to 0.002)
         private const val dollarToWonMultiplier = 1322.50
         private val decimalFormat = DecimalFormat("#,###")
     }
@@ -77,7 +77,12 @@ class SimpleGPTCommand(
                         OpenAIGPTMessage(OpenAIGPTMessage.Role.ASSISTANT, it.toOption()),
                         OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString.toOption())
                     )
-                } ?: mutableListOf(OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString.toOption())),
+                } ?: mutableListOf(
+                    OpenAIGPTMessage(
+                        OpenAIGPTMessage.Role.USER,
+                        event.getOption("contents")!!.asString.toOption()
+                    )
+                ),
                 1,
                 event.getOption("temperature")?.asDouble.toOption(),
                 event.getOption("top_p")?.asDouble.toOption(),

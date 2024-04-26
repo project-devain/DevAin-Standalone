@@ -70,7 +70,12 @@ class SimpleGroqCommand(
                         OpenAIGPTMessage(OpenAIGPTMessage.Role.ASSISTANT, it.toOption()),
                         OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString.toOption())
                     )
-                } ?: mutableListOf(OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString.toOption())),
+                } ?: mutableListOf(
+                    OpenAIGPTMessage(
+                        OpenAIGPTMessage.Role.USER,
+                        event.getOption("contents")!!.asString.toOption()
+                    )
+                ),
                 1,
                 event.getOption("temperature")?.asDouble.toOption(),
                 event.getOption("top_p")?.asDouble.toOption(),

@@ -82,10 +82,12 @@ class ImageGPTCommand(
                 event.getOption("base-prompt")?.asString?.let {
                     mutableListOf(
                         OpenAIGPTMessage(OpenAIGPTMessage.Role.ASSISTANT, it.toOption()),
-                        OpenAIGPTMessage(OpenAIGPTMessage.Role.USER,listOf(
-                            "text" to event.getOption("contents")!!.asString,
-                            "image_url" to event.getOption("image")!!.asAttachment.url
-                        ))
+                        OpenAIGPTMessage(
+                            OpenAIGPTMessage.Role.USER, listOf(
+                                "text" to event.getOption("contents")!!.asString,
+                                "image_url" to event.getOption("image")!!.asAttachment.url
+                            )
+                        )
                     )
                 } ?: mutableListOf(
                     OpenAIGPTMessage(
@@ -194,7 +196,7 @@ class ImageGPTCommand(
     }
 
     private fun appendRequest(builder: StringBuilder, request: OpenAIGPTRequest) {
-        builder.append("**요청:** \n${request.messages.last().content.find { it.first == "text" }?.second }}")
+        builder.append("**요청:** \n${request.messages.last().content.find { it.first == "text" }?.second}}")
         builder.appendNewLine(2)
     }
 

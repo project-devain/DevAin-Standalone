@@ -10,7 +10,6 @@ import org.koin.core.component.get
 import skywolf46.devain.controller.api.requests.openai.GPTCompletionAPICall
 import skywolf46.devain.model.api.openai.completion.*
 import java.text.DecimalFormat
-import kotlin.math.round
 
 class ArxivGPTCommand(
     command: String,
@@ -97,7 +96,7 @@ class ArxivGPTCommand(
                 listOf(
                     OpenAIFunctionKey("arxiv_search", OpenAIFunctionKey.FunctionFlag.BUILT_IN),
 
-                ).toOption()
+                    ).toOption()
             )
             apiCall.call(
                 request

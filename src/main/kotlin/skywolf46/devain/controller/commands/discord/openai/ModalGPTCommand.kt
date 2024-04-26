@@ -25,7 +25,7 @@ class ModalGPTCommand(
 ) : GPTCommand(command, description) {
     companion object {
         const val DEFAULT_MODEL = "gpt-4"
-        private val priceInfo = mapOf("gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002,"gpt-3.5-turbo-16k" to 0.002)
+        private val priceInfo = mapOf("gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002, "gpt-3.5-turbo-16k" to 0.002)
         private const val dollarToWonMultiplier = 1322.50
         private val decimalFormat = DecimalFormat("#,###")
     }
@@ -99,7 +99,12 @@ class ModalGPTCommand(
             if (it.interaction.getValue("prompt") == null) {
                 return@listenModal
             }
-            requestList.add(OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, it.interaction.getValue("prompt")!!.asString.toOption()))
+            requestList.add(
+                OpenAIGPTMessage(
+                    OpenAIGPTMessage.Role.USER,
+                    it.interaction.getValue("prompt")!!.asString.toOption()
+                )
+            )
             it.deferReply().queue { hook ->
                 runBlocking {
                     apiCall.call(request).onLeft { error ->

@@ -15,13 +15,15 @@ class CommandRPlusCommand : AnnotatedParameterDiscordCommand<RPlusRequest>("rplu
             apiCall.call(data.copy(model = "command-r-plus")).fold({
                 hook.sendMessage("오류가 발생했습니다. ${it.getErrorMessage()}").queue()
             }) {
-                val builder = GenerationResultTextBuilder("Request Complete - Command R+", data.message, listOf(
-                    mapOf(
-                        "Model" to box("Command R+ (Cohere)"),
-                        "Elapsed" to box(TimeUtil.toTimeString(event.elapsed())),
-                    ),
-                    mapOf("Response" to it.text)
-                ))
+                val builder = GenerationResultTextBuilder(
+                    "Request Complete - Command R+", data.message, listOf(
+                        mapOf(
+                            "Model" to box("Command R+ (Cohere)"),
+                            "Elapsed" to box(TimeUtil.toTimeString(event.elapsed())),
+                        ),
+                        mapOf("Response" to it.text)
+                    )
+                )
                 hook.sendMessageOrEmbed(1000, it.text) { embed ->
                     builder.asEmbed(embed)
                 }

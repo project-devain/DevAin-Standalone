@@ -7,7 +7,8 @@ import skywolf46.devain.platform.discord.AnnotatedParameterDiscordCommand
 import skywolf46.devain.util.GenerationResultTextBuilder
 import skywolf46.devain.util.TimeUtil
 
-class CohereCommand : AnnotatedParameterDiscordCommand<CohereGenerationRequest>("cohere", CohereGenerationRequest::class) {
+class CohereCommand :
+    AnnotatedParameterDiscordCommand<CohereGenerationRequest>("cohere", CohereGenerationRequest::class) {
     private val apiCall by inject<CohereGenerationAPICall>()
 
     override suspend fun onParameterCommand(event: CommandEvent, data: CohereGenerationRequest) {
