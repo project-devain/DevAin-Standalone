@@ -7,9 +7,11 @@ import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import skywolf46.devain.config.BotConfig
 import skywolf46.devain.controller.modules.*
+import skywolf46.devain.model.data.config.ConfigDocumentRoot
 import skywolf46.devain.platform.discord.DiscordBot
 import skywolf46.devain.platform.plugin.PluginManager
 import skywolf46.devain.platform.plugin.PluginModule
+import java.io.File
 
 
 fun main(args: Array<String>) {
@@ -17,42 +19,30 @@ fun main(args: Array<String>) {
 }
 
 class DevAin : KoinComponent {
-    val version = "1.2.0 - Grenade Muffin"
-
-    private val botConfig = BotConfig()
-
-    lateinit var discordBot: DiscordBot
-        private set
+    val version = "1.3.0 - Radioactive Emmer Bread"
 
     internal fun init() {
         println("DevAin $version - 초기화 시작")
-        initializeBot()
-        startKoin {
-            loadKoinModules(module {
-                single { discordBot }
-                single { botConfig }
-
-                single { PluginManager() }
-            })
-        }
+        startKoin {  }
         initializeBuiltInPlugins()
-        finalizeBot()
-    }
-
-    private fun initializeBot() {
-        println("디스코드 봇 활성화중..")
-        discordBot = DiscordBot(this, botConfig)
+        while (true) {
+            Thread.sleep(Long.MAX_VALUE)
+        }
     }
 
     private fun initializeBuiltInPlugins() {
         println("플러그인 활성화중..")
-        get<PluginManager>().apply {
+        PluginManager().apply {
             addPlugins(
                 DevAinModule(),
-                OpenAIModule(botConfig, botConfig.openAIToken),
-                DeepLModule(botConfig.deepLToken),
-                StabilityAIModule(botConfig.dreamStudioToken),
-                CohereModule(botConfig.cohereToken),
+                DiscordModule(),
+                OpenAIModule(),
+                DeepLModule(),
+                StabilityAIModule(),
+                CohereModule(),
+                AnthropicModule(),
+                GroqModule(),
+                KModule(),
                 object : PluginModule("Test Fatal Plugin") {
                     override fun canBeLoaded(): Boolean {
                         return false
@@ -62,11 +52,5 @@ class DevAin : KoinComponent {
             init()
         }
     }
-
-    private fun finalizeBot() {
-        println("디스코드 봇 설정 마무리중..")
-        discordBot.finishSetup()
-    }
-
 
 }
