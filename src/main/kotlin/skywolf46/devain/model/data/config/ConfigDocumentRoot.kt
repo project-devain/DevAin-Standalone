@@ -57,6 +57,10 @@ class ConfigDocumentRoot(private val configRoot: File, private val configFileNam
         }
     }
 
+    fun newDocument(fileName: String): ConfigDocumentRoot {
+        return ConfigDocumentRoot(configRoot.resolve(fileName), fileName)
+    }
+
     class ExpectedDocument(val key: String, val cls: KClass<out Any>) {
         private val listeners = mutableListOf<(Any) -> Unit>()
 
