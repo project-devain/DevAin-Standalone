@@ -72,7 +72,7 @@ class ImageGPTCommand(
 
     override suspend fun onCommand(event: SlashCommandInteractionEvent) {
         event.defer { _, hook ->
-            val attachment = event.getOption("image")!!.asAttachment!!
+            val attachment = event.getOption("image")!!.asAttachment
             if (!attachment.isImage) {
                 hook.sendMessage("이미지 파일만 업로드 가능합니다.").queue()
                 return@defer
@@ -82,21 +82,26 @@ class ImageGPTCommand(
                 event.getOption("base-prompt")?.asString?.let {
                     mutableListOf(
                         OpenAIGPTMessage(OpenAIGPTMessage.Role.ASSISTANT, it.toOption()),
-                        OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString.toOption()),
                         OpenAIGPTMessage(
-                            OpenAIGPTMessage.Role.IMAGE_URL,
-                            event.getOption("image")!!.asAttachment.url.toOption()
+                            OpenAIGPTMessage.Role.USER, listOf(
+                                "text" to event.getOption("contents")!!.asString,
+                                "image_url" to event.getOption("image")!!.asAttachment.url
+                            )
                         )
                     )
                 } ?: mutableListOf(
-                    OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, event.getOption("contents")!!.asString.toOption()),
-                    OpenAIGPTMessage(OpenAIGPTMessage.Role.IMAGE_URL, event.getOption("image")!!.asAttachment.url.toOption())
+                    OpenAIGPTMessage(
+                        OpenAIGPTMessage.Role.USER, listOf(
+                            "text" to event.getOption("contents")!!.asString,
+                            "image_url" to event.getOption("image")!!.asAttachment.url
+                        )
+                    )
                 ),
                 1,
                 event.getOption("temperature")?.asDouble.toOption(),
                 event.getOption("top_p")?.asDouble.toOption(),
                 event.getOption("best_of")?.asInt.toOption(),
-                event.getOption("max_token")?.asInt.toOption(),
+                (event.getOption("max_token")?.asInt ?: 4096).toOption(),
                 event.getOption("presence_penalty")?.asDouble.toOption(),
                 event.getOption("frequency_penalty")?.asDouble.toOption(),
                 event.getOption("hide-prompt")?.asBoolean ?: false
@@ -141,28 +146,27 @@ class ImageGPTCommand(
 
     private fun appendModel(event: SlashCommandInteractionEvent, builder: StringBuilder, request: OpenAIGPTRequest) {
         builder.append("└ 모델: ${request.modelName}").appendNewLine()
-        appendParameter(event, builder, request)
+        appendParameter( builder, request)
     }
 
     private fun appendParameter(
-        event: SlashCommandInteractionEvent,
         builder: StringBuilder,
         request: OpenAIGPTRequest
     ) {
-        request.temperature.tap {
+        request.temperature.onSome {
             builder.append("  └ Temperature: $it").appendNewLine()
         }
-        request.top_p.tap {
+        request.top_p.onSome {
             builder.append("  └ top_p: $it").appendNewLine()
         }
-        request.presencePenalty.tap {
+        request.presencePenalty.onSome {
             builder.append("  └ Presence Penalty: $it").appendNewLine()
         }
-        request.frequencyPenalty.tap {
+        request.frequencyPenalty.onSome {
             builder.append("  └ Frequency Penalty: $it").appendNewLine()
         }
 
-        request.maxTokens.tap {
+        request.maxTokens.onSome {
             builder.append("  └ Max tokens: ${decimalFormat.format(it)}").appendNewLine()
         }
 
@@ -191,12 +195,12 @@ class ImageGPTCommand(
     }
 
     private fun appendRequest(builder: StringBuilder, request: OpenAIGPTRequest) {
-        builder.append("**요청:** \n${request.messages.last().content.orNull()}")
+        builder.append("**요청:** \n${request.messages.last().content.find { it.first == "text" }?.second}}")
         builder.appendNewLine(2)
     }
 
     private fun appendResult(builder: StringBuilder, result: OpenAIGPTResponse) {
-        builder.append("**응답:** \n${result.answers[0].message.content.orNull()}")
+        builder.append("**응답:** \n${result.answers[0].message.content.find { it.first == "text" }?.second}")
     }
 
     private fun StringBuilder.appendNewLine(count: Int = 1) {

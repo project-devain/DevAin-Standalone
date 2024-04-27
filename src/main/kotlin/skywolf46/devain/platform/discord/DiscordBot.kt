@@ -5,11 +5,9 @@ import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
-import skywolf46.devain.DevAin
-import skywolf46.devain.config.BotConfig
 import kotlin.system.exitProcess
 
-class DiscordBot(devAin: DevAin, config: BotConfig) {
+class DiscordBot {
     lateinit var jda: JDA
 
     private val commandAdapter by lazy {
@@ -18,17 +16,6 @@ class DiscordBot(devAin: DevAin, config: BotConfig) {
 
     private val commands = mutableListOf<DiscordCommand>()
 
-    init {
-        kotlin.runCatching {
-            jda = JDABuilder.create(config.botToken, GatewayIntent.values().toList()).addEventListeners()
-                .setStatus(OnlineStatus.IDLE).setActivity(Activity.listening("안")).build()
-        }.onFailure {
-            println("초기화 실패; 봇 초기화 중 오류가 발생하였습니다.")
-            it.printStackTrace()
-            exitProcess(-1)
-        }
-        jda.addEventListener(commandAdapter)
-    }
 
     fun registerCommands(vararg command: DiscordCommand): DiscordBot {
         commands.addAll(command)
@@ -40,7 +27,16 @@ class DiscordBot(devAin: DevAin, config: BotConfig) {
         return this
     }
 
-    internal fun finishSetup() {
+    internal fun finishSetup(apiToken: String) {
+        kotlin.runCatching {
+            jda = JDABuilder.create(apiToken, GatewayIntent.values().toList()).addEventListeners()
+                .setStatus(OnlineStatus.IDLE).setActivity(Activity.listening("안")).build().awaitReady()
+        }.onFailure {
+            println("초기화 실패; 봇 초기화 중 오류가 발생하였습니다.")
+            it.printStackTrace()
+            exitProcess(-1)
+        }
+        jda.addEventListener(commandAdapter)
         commandAdapter.registerCommands(*commands.toTypedArray())
     }
 }

@@ -1,4 +1,4 @@
-### Devain Standalone - OpenAI Discord Bot 
+# Devain Standalone - OpenAI Discord Bot 
 
 Devain은 [데비안 리눅스](https://www.debian.org/)에서 이름을 가져온 [OpenAI API](https://platform.openai.com/docs/api-reference) 기반 디스코드 봇 프로젝트입니다.
 
@@ -14,13 +14,19 @@ Devain은 OpenAI의 API를 통해 GPT 기능을 디스코드에서 사용함을 
 
 [해당 문서](/docs/commands.md)를 확인하세요.
 
-
 ### 자주 물어는 볼 것 같은 질문
 
 #### 봇에는 무슨 권한을 넣어야 합니까?
 Slash Command 권한 외에는 사용하지 않는 클린한 봇입니다!
 
 최소한의 권한으로 즐겨보세요.
+
+#### 직접 봇을 구동하고 싶지 않습니다.
+봇의 개발자와 친목을 다져보세요. 개발자의 디스코드 ID는 skywolf46입니다.
+
+DevAin 공식 디스코드 봇은 비공개로 운영되고 있으며, 몇몇 선택된 서버에서만 사용 가능합니다.
+
+선택된 서버들에서의 구동 비용은 개발자가 부담하고 있습니다.
 
 #### ChatGPT가 헛소리를 합니다.
 ![깡](images/breakdown.jpg)<br>
@@ -29,14 +35,6 @@ Slash Command 권한 외에는 사용하지 않는 클린한 봇입니다!
 #### 왜 모델이 하드코딩되어있습니까?
 
 귀찮았습니다. 추후 업데이트를 통해 선택 가능하도록 변경될 예정입니다.
-
-#### 왜 설정 파일로 property를..?
-
-귀찮았습니다. 추후 toml로 변경됩니다.
-
-#### 게다가 환율은 왜 하드코딩이?
-
-귀찮았습니다. 추후 환율 API를 사용해 실시간으로 업데이트되도록 할 예정입니다.
 
 #### 대체 소모 비용은 왜 넣어둔겁니까?
 
@@ -49,6 +47,8 @@ Slash Command 권한 외에는 사용하지 않는 클린한 봇입니다!
 #### 이 코드, 갖다가 수정해도 됩니까?
 
 표면상으로는 MIT를 넣어두었지만, 사실 이 코드는 [니 마음대로 하세요](https://en.wikipedia.org/wiki/WTFPL)™ 라이선스를 따릅니다.
+
+이 Q&A를 읽은 사람만이 MIT 라이선스에 낚이지 않고 자유롭게 코드를 수정할 수 있습니다.
 
 
 ### 나중에 할 것 (TODO (2) - 복사본 - 복사본)

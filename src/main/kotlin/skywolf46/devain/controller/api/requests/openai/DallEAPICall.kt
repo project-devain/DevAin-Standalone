@@ -10,8 +10,8 @@ import org.json.simple.JSONObject
 import org.koin.core.component.get
 import skywolf46.devain.KEY_DALLE_PROCEED_COUNT
 import skywolf46.devain.KEY_DALLE_PROCEED_TIME
-import skywolf46.devain.controller.api.APIError
-import skywolf46.devain.controller.api.RESTAPICall
+import skywolf46.devain.apicall.APIError
+import skywolf46.devain.apicall.RESTAPICall
 import skywolf46.devain.controller.api.requests.devain.DevAinUpdatePersistenceCountAPICall
 import skywolf46.devain.model.api.openai.UpdateRequest
 import skywolf46.devain.model.api.openai.dalle.DallERequest

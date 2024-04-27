@@ -2,10 +2,10 @@ package skywolf46.devain.controller.api.requests.devain
 
 import arrow.core.Either
 import arrow.core.right
-import skywolf46.devain.controller.api.APICall
-import skywolf46.devain.controller.api.APIError
-import skywolf46.devain.model.EmptyRequest
-import skywolf46.devain.model.GenericMapResponse
+import skywolf46.devain.apicall.APICall
+import skywolf46.devain.apicall.APIError
+import skywolf46.devain.apicall.networking.EmptyRequest
+import skywolf46.devain.apicall.networking.GenericMapResponse
 import java.util.*
 
 class DevAinAppPropertiesAPICall : APICall<EmptyRequest, GenericMapResponse<String, String>> {

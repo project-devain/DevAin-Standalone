@@ -2,7 +2,7 @@ package skywolf46.devain.model.api.openai.completion
 
 import arrow.core.*
 import org.json.simple.JSONObject
-import skywolf46.devain.model.Request
+import skywolf46.devain.apicall.networking.Request
 
 open class OpenAIGPTMessage(
     /**
@@ -12,7 +12,7 @@ open class OpenAIGPTMessage(
     /**
      * Message content.
      */
-    val content: Option<String>,
+    val content: List<Pair<String, String>>,
     val functionCall: Option<JSONObject> = None,
     val functionName: Option<String> = None
 ) : Request<JSONObject> {
@@ -29,17 +29,43 @@ open class OpenAIGPTMessage(
                 data["name"]?.toString().toOption(),
             )
         }
+
+        operator fun invoke(
+            /**
+             * Message role.
+             */
+            role: Role,
+            /**
+             * Message content.
+             */
+            content: Option<String>,
+            functionCall: Option<JSONObject> = None,
+            functionName: Option<String> = None
+        ) = OpenAIGPTMessage(
+            role,
+            if (content.isNone()) emptyList() else listOf("text" to content.getOrNull()!!),
+            functionCall,
+            functionName
+        )
     }
 
-    override fun asJson(): Either<Throwable, JSONObject> {
+    override fun serialize(): Either<Throwable, JSONObject> {
         return JSONObject().apply {
 
             this["role"] = role.gptType.lowercase()
-            this["content"] = content.orNull()
-            functionCall.tap {
+            this["content"] = content.map {
+                JSONObject().apply {
+                    this["type"] = it.first
+                    when (this["type"]) {
+                        "image_url" -> this["image_url"] = it.second
+                        else -> this["text"] = it.second
+                    }
+                }
+            }
+            functionCall.onSome {
                 this["function_call"] = it
             }
-            functionName.tap {
+            functionName.onSome {
                 this["name"] = it
             }
 

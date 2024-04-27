@@ -2,8 +2,10 @@ package skywolf46.devain.platform.discord
 
 import arrow.core.Either
 import arrow.core.identity
-import kotlinx.coroutines.*
-import net.dv8tion.jda.api.EmbedBuilder
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent

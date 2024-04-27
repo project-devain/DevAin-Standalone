@@ -1,5 +1,6 @@
 package skywolf46.devain.controller.commands.discord.openai
 
+import arrow.core.Option
 import arrow.core.toOption
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -27,6 +28,9 @@ class DallEGenerationCommand : ImprovedDiscordCommand("dalle", "OpenAI DallE를 
         ) {
             DallERequest.ImageSize.values().map { it.name.lowercase() }.toList()
         }
+        options.addCompletableOption("style", "이미지의 스타일을 지정합니다.", false) {
+            listOf("vivid", "natural")
+        }
     }
 
     override suspend fun onCommand(event: SlashCommandInteractionEvent) {
@@ -37,7 +41,8 @@ class DallEGenerationCommand : ImprovedDiscordCommand("dalle", "OpenAI DallE를 
                 event.getOption("size")?.asString?.let { DallERequest.ImageSize.valueOf(it.uppercase()) }
                     ?: DallERequest.ImageSize.X1024,
                 DallERequest.ResponseType.URL,
-                1
+                1,
+                Option.fromNullable(event.getOption("style")?.asString)
             )).onLeft {
                 hook.sendMessage(it.getErrorMessage()).queue()
             }.onRight {
@@ -46,7 +51,7 @@ class DallEGenerationCommand : ImprovedDiscordCommand("dalle", "OpenAI DallE를 
                         .setColor(Color.GREEN)
                         .setTitle("Reqeust complete - DallE")
                         .setDescription(prompt)
-                        .setImage(it.images[0].url.orNull()!!)
+                        .setImage(it.images[0].url.getOrNull()!!)
                         .build()
                 ).queue()
             }

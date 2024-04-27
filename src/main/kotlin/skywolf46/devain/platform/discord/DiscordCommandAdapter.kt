@@ -17,7 +17,7 @@ class DiscordCommandAdapter(private val jda: JDA) : ListenerAdapter() {
             commandRegistry[commandData.first] = x
             updateAction.addCommands(commandData.second)
             if (x is ImprovedDiscordCommand) {
-                x.modalId.tap {
+                x.modalId.onSome {
                     modalRegistry[it] = x
                 }
             }
@@ -34,8 +34,6 @@ class DiscordCommandAdapter(private val jda: JDA) : ListenerAdapter() {
     }
 
     override fun onModalInteraction(event: ModalInteractionEvent) {
-        println("Modal! (${event.interaction.modalId})")
-        println(modalRegistry.keys)
         modalRegistry[event.interaction.modalId]?.onModal(event)
     }
 }

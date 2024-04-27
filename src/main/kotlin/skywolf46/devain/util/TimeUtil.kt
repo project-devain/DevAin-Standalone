@@ -36,7 +36,6 @@ object TimeUtil {
     }
 
     fun parseToLong(time: String): Either<String, Long> {
-        "".toOption().and("".toOption())
         return parseToLong(time, timeDelimiters)
     }
 

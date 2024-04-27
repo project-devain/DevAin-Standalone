@@ -4,8 +4,8 @@ import arrow.core.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.koin.core.component.get
-import skywolf46.devain.model.Request
-import skywolf46.devain.model.store.OpenAIFunctionStore
+import skywolf46.devain.apicall.networking.Request
+import skywolf46.devain.model.data.store.OpenAIFunctionStore
 import skywolf46.devain.util.checkRangeAndFatal
 
 data class OpenAIGPTRequest(
@@ -93,46 +93,46 @@ data class OpenAIGPTRequest(
     /**
      * Struct JSONObject from this request.
      */
-    override fun asJson(): Either<Throwable, JSONObject> {
+    override fun serialize(): Either<Throwable, JSONObject> {
         val map = JSONObject()
-        temperature.tap {
+        temperature.onSome {
             it.checkRangeAndFatal(0.0..2.0) { range ->
                 return IllegalArgumentException("Temperature 값은 ${range.start} ~ ${range.endInclusive} 사이여야만 합니다.").left()
             }
             map["temperature"] = it
         }
-        top_p.tap {
+        top_p.onSome {
             it.checkRangeAndFatal(0.0..1.0) { range ->
                 return IllegalArgumentException("top_p 값은 ${range.start} ~ ${range.endInclusive} 사이여야만 합니다.").left()
             }
             map["top_p"] = it
         }
-        maxTokens.tap {
+        maxTokens.onSome {
             it.checkRangeAndFatal(1..Int.MAX_VALUE) { range ->
                 return IllegalArgumentException("최대 토큰 값은 ${range.start} ~ ${range.endInclusive} 사이여야만 합니다.").left()
             }
             map["max_tokens"] = it
         }
-        presencePenalty.tap {
+        presencePenalty.onSome {
             it.checkRangeAndFatal(-2.0..2.0) { range ->
                 return IllegalArgumentException("Presence Penalty 값은 ${range.start} ~ ${range.endInclusive} 사이여야만 합니다.").left()
             }
             map["presence_penalty"] = it
         }
-        frequencyPenalty.tap {
+        frequencyPenalty.onSome {
             it.checkRangeAndFatal(-2.0..2.0) { range ->
                 return IllegalArgumentException("Frequency Penalty 값은 ${range.start} ~ ${range.endInclusive} 사이여야만 합니다.").left()
             }
             map["frequency_penalty"] = it
         }
-        functions.tap {
+        functions.onSome {
             for (key in it) {
-                if (functionStore.getFunction(key).isEmpty())
+                if (functionStore.getFunction(key).isNone())
                     return IllegalArgumentException("존재하지 않는 함수 키입니다. ($key)").left()
             }
-            map["functions"] = it.map { key -> functionStore.getFunction(key).orNull()!!.asJson().getOrNull()!! }
+            map["functions"] = it.map { key -> functionStore.getFunction(key).getOrNull()!!.serialize().getOrNull()!! }
         }
-        bestOf.tap {
+        bestOf.onSome {
             if (it > 10) {
                 return IllegalArgumentException("bestOf 값은 10 이하여야 합니다.").left()
             }
@@ -145,7 +145,7 @@ data class OpenAIGPTRequest(
 //            return IllegalArgumentException("마지막 메시지는 USER 혹은 FUNCTION 역할이어야 합니다.").left()
 //        }
         map["messages"] = JSONArray().apply {
-            addAll(messages.map { it.asJson().getOrNull()!! })
+            addAll(messages.map { it.serialize().getOrNull()!! })
         }
         map["n"] = generateAmount
 

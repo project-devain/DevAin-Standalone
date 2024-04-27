@@ -3,8 +3,8 @@ package skywolf46.devain.model.api.openai.completion.functions
 import arrow.core.getOrElse
 import org.json.simple.JSONObject
 import org.koin.core.component.inject
+import skywolf46.devain.apicall.networking.GenericJSONObjectResponse
 import skywolf46.devain.controller.api.requests.google.GoogleSearchAPICall
-import skywolf46.devain.model.GenericJSONObjectResponse
 import skywolf46.devain.model.api.google.GoogleSearchRequest
 import skywolf46.devain.model.api.openai.OpenAIParameterSchema
 import skywolf46.devain.model.api.openai.completion.OpenAIFunctionDeclaration
@@ -28,7 +28,7 @@ class GoogleSearchDeclaration : OpenAIFunctionDeclaration(
         return apiCall.call(GoogleSearchRequest(param["query"].toString(), 6))
             .map {
                 JSONObject().apply {
-                    put("result", it.items.mapIndexed { index, item ->
+                    put("result", it.items.mapIndexed { _, item ->
                         JSONObject().apply {
                             put("title", item.title)
                             if (item.link.length < 50)

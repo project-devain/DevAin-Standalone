@@ -1,7 +1,7 @@
 package skywolf46.devain.model.api.deepl.translation
 
 import org.json.simple.JSONObject
-import skywolf46.devain.model.Response
+import skywolf46.devain.apicall.networking.Response
 
 data class DeepLTranslateResponse(val sourceLanguage: String, val translationResult: String) : Response {
     companion object {

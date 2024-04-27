@@ -3,13 +3,13 @@ package skywolf46.devain.controller.modules
 import org.koin.core.component.inject
 import skywolf46.devain.KEY_DALLE_PROCEED_COUNT
 import skywolf46.devain.KEY_DALLE_PROCEED_TIME
-import skywolf46.devain.controller.api.certainly
+import skywolf46.devain.apicall.certainly
+import skywolf46.devain.apicall.networking.GetRequest
 import skywolf46.devain.controller.api.requests.devain.DevAinPersistenceCountAPICall
-import skywolf46.devain.model.api.openai.GetRequest
 import skywolf46.devain.platform.plugin.PluginModule
 import skywolf46.devain.util.TimeUtil
 
-class StabilityAIModule(private val dreamStudioToken: String) : PluginModule("Stability AI Integration") {
+class StabilityAIModule : PluginModule("Stability AI Integration") {
     private val apiCall by inject<DevAinPersistenceCountAPICall>()
 
     override fun onInitialize() {

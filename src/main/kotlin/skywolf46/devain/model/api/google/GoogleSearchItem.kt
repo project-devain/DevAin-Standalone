@@ -15,7 +15,7 @@ data class GoogleSearchItem(
     val htmlSnippet: String
 ) {
     companion object {
-        fun fromJson(data: JSONObject) : GoogleSearchItem {
+        fun fromJson(data: JSONObject): GoogleSearchItem {
             return GoogleSearchItem(
                 data["kind"].toString(),
                 data["title"].toString(),

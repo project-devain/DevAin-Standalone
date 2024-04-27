@@ -1,10 +1,18 @@
 package skywolf46.devain.platform.plugin
 
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.context.loadKoinModules
+import org.koin.dsl.module
+import skywolf46.devain.configurator.ConfigAdaptor
+import skywolf46.devain.configurator.ConfigDocumentRoot
+import skywolf46.devain.configurator.yaml.yaml
+import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-class PluginManager {
+class PluginManager : KoinComponent {
     private val plugins = mutableListOf<PluginModule>()
 
     private val enabledPlugins = mutableListOf<PluginModule>()
@@ -13,18 +21,27 @@ class PluginManager {
 
     private val lock = ReentrantLock()
 
+    private val document = ConfigDocumentRoot(File("devain/config"), "config.yml")
 
     fun init() {
+        if (isInitialized.getAndSet(true)) {
+            throw IllegalStateException("PluginManager is already initialized")
+        }
+        loadKoinModules()
+        filterPlugins()
+        initializePlugin()
+    }
+
+
+    private fun loadKoinModules() {
+        loadKoinModules(module {
+            single { this@PluginManager }
+            single { document }
+        })
+    }
+
+    private fun initializePlugin() {
         lock.withLock {
-            if (isInitialized.get()) {
-                throw IllegalStateException("PluginManager is already initialized")
-            }
-            enabledPlugins.addAll(plugins.filter {
-                runCatching {
-                    it.canBeLoaded()
-                }.getOrElse { false }
-            })
-            isInitialized.set(true)
             iterateEnabledPlugin {
                 it.onPreInitialize()
             }
@@ -34,8 +51,21 @@ class PluginManager {
             iterateEnabledPlugin {
                 it.onPostInitialize()
             }
+            get<ConfigDocumentRoot>().loadSharedDocument(ConfigAdaptor.yaml())
+            iterateEnabledPlugin {
+                it.onInitializeComplete()
+            }
         }
     }
+
+    private fun filterPlugins() {
+        enabledPlugins.addAll(plugins.filter {
+            runCatching {
+                it.canBeLoaded()
+            }.getOrElse { false }
+        })
+    }
+
 
     private fun iterateEnabledPlugin(executor: (PluginModule) -> Unit) {
         enabledPlugins.toList().forEach { plugin ->

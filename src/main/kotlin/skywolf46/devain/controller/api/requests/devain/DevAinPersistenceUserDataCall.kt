@@ -4,11 +4,11 @@ import arrow.core.Either
 import org.koin.core.component.get
 import skywolf46.devain.SQLITE_PERSISTENCE
 import skywolf46.devain.TABLE_PERSISTENCE_COUNT
-import skywolf46.devain.controller.api.APICall
-import skywolf46.devain.controller.api.APIError
-import skywolf46.devain.model.GenericListResponse
-import skywolf46.devain.model.api.openai.GetRequest
-import skywolf46.devain.model.store.SqliteStore
+import skywolf46.devain.apicall.APICall
+import skywolf46.devain.apicall.APIError
+import skywolf46.devain.apicall.networking.GenericListResponse
+import skywolf46.devain.apicall.networking.GetRequest
+import skywolf46.devain.model.data.store.SqliteStore
 
 class DevAinPersistenceUserDataCall : APICall<GetRequest<String>, GenericListResponse<String>> {
     private val store = get<SqliteStore>()

@@ -1,7 +1,7 @@
 package skywolf46.devain.model.api.openai.dalle
 
 import org.json.simple.JSONObject
-import skywolf46.devain.model.Response
+import skywolf46.devain.apicall.networking.Response
 import skywolf46.devain.model.api.openai.OpenAIImage
 import skywolf46.devain.util.getList
 

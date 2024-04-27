@@ -3,7 +3,7 @@ package skywolf46.devain.model.api.openai.completion
 import arrow.core.Either
 import arrow.core.right
 import org.json.simple.JSONObject
-import skywolf46.devain.model.Request
+import skywolf46.devain.apicall.networking.Request
 import skywolf46.devain.model.api.openai.OpenAIParameterSchema
 import skywolf46.devain.util.putArray
 import skywolf46.devain.util.putMap
@@ -25,11 +25,11 @@ open class OpenAIFunctionDeclaration(
     val parameterSchema: List<OpenAIParameterSchema>
 ) : Request<JSONObject> {
 
-    open suspend fun call(param: JSONObject) : JSONObject {
+    open suspend fun call(param: JSONObject): JSONObject {
         return JSONObject()
     }
 
-    override fun asJson(): Either<Throwable, JSONObject> {
+    override fun serialize(): Either<Throwable, JSONObject> {
         return JSONObject().apply {
             put("name", key.functionName)
             put("description", description)
@@ -40,9 +40,10 @@ open class OpenAIFunctionDeclaration(
     private fun buildParameterJson(): JSONObject {
         return JSONObject().apply {
             put("type", "object")
-            putMap("properties",
+            putMap(
+                "properties",
                 *parameterSchema.map {
-                    it.parameterName to it.asJson().getOrNull()!!
+                    it.parameterName to it.serialize().getOrNull()!!
                 }.toTypedArray()
             )
             putArray(

@@ -25,7 +25,7 @@ class ModalGPTCommand(
 ) : GPTCommand(command, description) {
     companion object {
         const val DEFAULT_MODEL = "gpt-4"
-        private val priceInfo = mapOf("gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002,"gpt-3.5-turbo-16k" to 0.002)
+        private val priceInfo = mapOf("gpt-4" to 0.06, "gpt-3.5-turbo" to 0.002, "gpt-3.5-turbo-16k" to 0.002)
         private const val dollarToWonMultiplier = 1322.50
         private val decimalFormat = DecimalFormat("#,###")
     }
@@ -99,7 +99,12 @@ class ModalGPTCommand(
             if (it.interaction.getValue("prompt") == null) {
                 return@listenModal
             }
-            requestList.add(OpenAIGPTMessage(OpenAIGPTMessage.Role.USER, it.interaction.getValue("prompt")!!.asString.toOption()))
+            requestList.add(
+                OpenAIGPTMessage(
+                    OpenAIGPTMessage.Role.USER,
+                    it.interaction.getValue("prompt")!!.asString.toOption()
+                )
+            )
             it.deferReply().queue { hook ->
                 runBlocking {
                     apiCall.call(request).onLeft { error ->
@@ -142,28 +147,27 @@ class ModalGPTCommand(
 
     private fun appendModel(event: SlashCommandInteractionEvent, builder: StringBuilder, request: OpenAIGPTRequest) {
         builder.append("└ 모델: ${request.modelName}").appendNewLine()
-        appendParameter(event, builder, request)
+        appendParameter( builder, request)
     }
 
     private fun appendParameter(
-        event: SlashCommandInteractionEvent,
         builder: StringBuilder,
         request: OpenAIGPTRequest
     ) {
-        request.temperature.tap {
+        request.temperature.onSome {
             builder.append("  └ Temperature: $it").appendNewLine()
         }
-        request.top_p.tap {
+        request.top_p.onSome {
             builder.append("  └ top_p: $it").appendNewLine()
         }
-        request.presencePenalty.tap {
+        request.presencePenalty.onSome {
             builder.append("  └ Presence Penalty: $it").appendNewLine()
         }
-        request.frequencyPenalty.tap {
+        request.frequencyPenalty.onSome {
             builder.append("  └ Frequency Penalty: $it").appendNewLine()
         }
 
-        request.maxTokens.tap {
+        request.maxTokens.onSome {
             builder.append("  └ Max tokens: ${decimalFormat.format(it)}").appendNewLine()
         }
 
@@ -192,12 +196,12 @@ class ModalGPTCommand(
     }
 
     private fun appendRequest(builder: StringBuilder, request: OpenAIGPTRequest) {
-        builder.append("**요청:** \n${request.messages.last().content.orNull()}")
+        builder.append("**요청:** \n${request.messages.last().content.find { it.first == "text" }?.second}")
         builder.appendNewLine(2)
     }
 
     private fun appendResult(builder: StringBuilder, result: OpenAIGPTResponse) {
-        builder.append("**응답:** \n${result.answers[0].message.content.orNull()}")
+        builder.append("**응답:** \n${result.answers[0].message.content.find { it.first == "text" }?.second}")
     }
 
     private fun StringBuilder.appendNewLine(count: Int = 1) {

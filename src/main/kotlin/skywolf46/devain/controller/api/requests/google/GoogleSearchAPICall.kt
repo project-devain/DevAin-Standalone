@@ -9,11 +9,10 @@ import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import org.koin.core.component.get
 import org.koin.core.component.inject
-import skywolf46.devain.controller.api.APICall
-import skywolf46.devain.controller.api.APIError
-import skywolf46.devain.controller.api.error.PreconditionError
-import skywolf46.devain.controller.api.error.StandardRestAPIError
-import skywolf46.devain.controller.api.error.UnexpectedError
+import skywolf46.devain.apicall.APICall
+import skywolf46.devain.apicall.APIError
+import skywolf46.devain.apicall.errors.StandardRestAPIError
+import skywolf46.devain.apicall.errors.UnexpectedError
 import skywolf46.devain.model.api.google.GoogleSearchRequest
 import skywolf46.devain.model.api.google.GoogleSearchResponse
 import java.net.URLEncoder

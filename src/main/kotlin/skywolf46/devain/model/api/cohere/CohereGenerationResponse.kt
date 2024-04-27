@@ -1,7 +1,7 @@
 package skywolf46.devain.model.api.cohere
 
 import org.json.simple.JSONObject
-import skywolf46.devain.model.Response
+import skywolf46.devain.apicall.networking.Response
 import skywolf46.devain.util.getList
 
 data class CohereGenerationResponse(val id: String, val prompt: String, val generations: List<CohereMessage>) :
