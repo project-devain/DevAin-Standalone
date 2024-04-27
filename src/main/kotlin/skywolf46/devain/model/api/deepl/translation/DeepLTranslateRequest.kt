@@ -53,7 +53,7 @@ data class DeepLTranslateRequest(
 
     override fun serialize(): Either<Throwable, JSONObject> {
         val map = JSONObject()
-        sourceLanguage.tap {
+        sourceLanguage.onSome {
             if (!isSupported(it)) {
                 return IllegalArgumentException("Source language $it is not supported.").left()
             }

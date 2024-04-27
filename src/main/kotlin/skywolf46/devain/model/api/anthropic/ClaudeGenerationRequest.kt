@@ -14,7 +14,7 @@ class ClaudeGenerationRequest(
     override fun serialize(): Either<Throwable, JSONObject> {
         val obj = JSONObject()
         obj["model"] = model
-        obj["messages"] = messages.map { it.serialize().orNull() }
+        obj["messages"] = messages.map { it.serialize().getOrNull() }
         maxTokens.map { obj["max_tokens"] = it }
         return obj.right()
     }

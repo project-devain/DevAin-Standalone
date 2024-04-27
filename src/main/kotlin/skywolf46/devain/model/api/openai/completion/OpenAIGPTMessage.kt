@@ -43,7 +43,7 @@ open class OpenAIGPTMessage(
             functionName: Option<String> = None
         ) = OpenAIGPTMessage(
             role,
-            if (content.isEmpty()) emptyList() else listOf("text" to content.orNull()!!),
+            if (content.isNone()) emptyList() else listOf("text" to content.getOrNull()!!),
             functionCall,
             functionName
         )
@@ -62,10 +62,10 @@ open class OpenAIGPTMessage(
                     }
                 }
             }
-            functionCall.tap {
+            functionCall.onSome {
                 this["function_call"] = it
             }
-            functionName.tap {
+            functionName.onSome {
                 this["name"] = it
             }
 

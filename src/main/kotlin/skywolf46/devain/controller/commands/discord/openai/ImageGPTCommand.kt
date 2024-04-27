@@ -72,7 +72,7 @@ class ImageGPTCommand(
 
     override suspend fun onCommand(event: SlashCommandInteractionEvent) {
         event.defer { _, hook ->
-            val attachment = event.getOption("image")!!.asAttachment!!
+            val attachment = event.getOption("image")!!.asAttachment
             if (!attachment.isImage) {
                 hook.sendMessage("이미지 파일만 업로드 가능합니다.").queue()
                 return@defer
@@ -146,28 +146,27 @@ class ImageGPTCommand(
 
     private fun appendModel(event: SlashCommandInteractionEvent, builder: StringBuilder, request: OpenAIGPTRequest) {
         builder.append("└ 모델: ${request.modelName}").appendNewLine()
-        appendParameter(event, builder, request)
+        appendParameter( builder, request)
     }
 
     private fun appendParameter(
-        event: SlashCommandInteractionEvent,
         builder: StringBuilder,
         request: OpenAIGPTRequest
     ) {
-        request.temperature.tap {
+        request.temperature.onSome {
             builder.append("  └ Temperature: $it").appendNewLine()
         }
-        request.top_p.tap {
+        request.top_p.onSome {
             builder.append("  └ top_p: $it").appendNewLine()
         }
-        request.presencePenalty.tap {
+        request.presencePenalty.onSome {
             builder.append("  └ Presence Penalty: $it").appendNewLine()
         }
-        request.frequencyPenalty.tap {
+        request.frequencyPenalty.onSome {
             builder.append("  └ Frequency Penalty: $it").appendNewLine()
         }
 
-        request.maxTokens.tap {
+        request.maxTokens.onSome {
             builder.append("  └ Max tokens: ${decimalFormat.format(it)}").appendNewLine()
         }
 

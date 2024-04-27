@@ -72,7 +72,7 @@ class GPTCompletionAPICall(private val apiKey: String, client: Option<HttpClient
         response: OpenAIGPTResponse,
         stackTrace: OpenAIFunctionCallStackTrace
     ): Either<APIError, OpenAIGPTResponse> {
-        val functionRequest = response.answers[0].message.functionCall.orNull()!!
+        val functionRequest = response.answers[0].message.functionCall.getOrNull()!!
         val function = functionStore.getFunctionOrEmpty(
             OpenAIFunctionKey(
                 functionRequest["name"]!!.toString(),

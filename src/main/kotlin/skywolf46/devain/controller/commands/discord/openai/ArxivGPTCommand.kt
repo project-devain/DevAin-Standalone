@@ -140,30 +140,29 @@ class ArxivGPTCommand(
         return builder.toString()
     }
 
-    private fun appendModel(event: SlashCommandInteractionEvent, builder: StringBuilder, request: OpenAIGPTRequest) {
+    private fun appendModel(builder: StringBuilder, request: OpenAIGPTRequest) {
         builder.append("└ 모델: ${request.modelName}").appendNewLine()
-        appendParameter(event, builder, request)
+        appendParameter(builder, request)
     }
 
     private fun appendParameter(
-        event: SlashCommandInteractionEvent,
         builder: StringBuilder,
         request: OpenAIGPTRequest
     ) {
-        request.temperature.tap {
+        request.temperature.onSome {
             builder.append("  └ Temperature: $it").appendNewLine()
         }
-        request.top_p.tap {
+        request.top_p.onSome {
             builder.append("  └ top_p: $it").appendNewLine()
         }
-        request.presencePenalty.tap {
+        request.presencePenalty.onSome {
             builder.append("  └ Presence Penalty: $it").appendNewLine()
         }
-        request.frequencyPenalty.tap {
+        request.frequencyPenalty.onSome {
             builder.append("  └ Frequency Penalty: $it").appendNewLine()
         }
 
-        request.maxTokens.tap {
+        request.maxTokens.onSome {
             builder.append("  └ Max tokens: ${decimalFormat.format(it)}").appendNewLine()
         }
 
@@ -179,7 +178,7 @@ class ArxivGPTCommand(
         result: OpenAIGPTResponse
     ) {
         builder.append("**API 상세**:").appendNewLine(1)
-        appendModel(event, builder, request)
+        appendModel(builder, request)
         builder.append("└ API 소모: ${result.usage.totalToken}토큰")
         builder.appendNewLine()
         builder.append("└ API 응답 시간: ${decimalFormat.format(System.currentTimeMillis() - request.createdOn)}ms")

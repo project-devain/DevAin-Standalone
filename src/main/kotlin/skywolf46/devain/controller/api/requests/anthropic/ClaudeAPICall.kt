@@ -14,7 +14,7 @@ import skywolf46.devain.model.api.anthropic.ClaudeGenerationResponse
 
 class ClaudeAPICall(private val apiKey: String, client: Option<HttpClient> = None) :
     RESTAPICall<ClaudeGenerationRequest, ClaudeGenerationResponse>(
-        { req -> "https://api.anthropic.com/v1/messages" }, client, HttpMethod.Post
+        { "https://api.anthropic.com/v1/messages" }, client, HttpMethod.Post
     ) {
     override suspend fun parseResult(
         request: ClaudeGenerationRequest,

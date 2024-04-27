@@ -21,7 +21,7 @@ data class DallERequest(
         generateCount.checkRangeAndFatal(1..10) {
             return IllegalArgumentException("생성 개수는 1개 이상 10개 이하로 설정해야 합니다.").left()
         }
-        style.tap {
+        style.onSome {
             if (it !in listOf("vivid", "natural")) {
                 return IllegalArgumentException("스타일은 vivid 또는 natural로 설정해야 합니다.").left()
             }
@@ -31,7 +31,7 @@ data class DallERequest(
             this["prompt"] = prompt
             this["n"] = generateCount
             this["size"] = imageSize.requestType
-            style.tap {
+            style.onSome {
                 this["style"] = it
             }
             this["response_format"] = responseType.name.lowercase()

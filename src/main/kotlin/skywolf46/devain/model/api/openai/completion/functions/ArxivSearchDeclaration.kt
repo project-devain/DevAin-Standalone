@@ -28,7 +28,7 @@ class ArxivSearchDeclaration : OpenAIFunctionDeclaration(
         return apiCall.call(ArxivRequest(param["query"].toString()))
             .map {
                 JSONObject().apply {
-                    put("result", it.articles.mapIndexed { index, item ->
+                    put("result", it.articles.mapIndexed { _, item ->
                         JSONObject().apply {
                             put("title", item.title)
                             put("abstract", item.summary)

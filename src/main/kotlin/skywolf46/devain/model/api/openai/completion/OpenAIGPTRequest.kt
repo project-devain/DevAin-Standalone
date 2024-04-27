@@ -95,44 +95,44 @@ data class OpenAIGPTRequest(
      */
     override fun serialize(): Either<Throwable, JSONObject> {
         val map = JSONObject()
-        temperature.tap {
+        temperature.onSome {
             it.checkRangeAndFatal(0.0..2.0) { range ->
                 return IllegalArgumentException("Temperature 값은 ${range.start} ~ ${range.endInclusive} 사이여야만 합니다.").left()
             }
             map["temperature"] = it
         }
-        top_p.tap {
+        top_p.onSome {
             it.checkRangeAndFatal(0.0..1.0) { range ->
                 return IllegalArgumentException("top_p 값은 ${range.start} ~ ${range.endInclusive} 사이여야만 합니다.").left()
             }
             map["top_p"] = it
         }
-        maxTokens.tap {
+        maxTokens.onSome {
             it.checkRangeAndFatal(1..Int.MAX_VALUE) { range ->
                 return IllegalArgumentException("최대 토큰 값은 ${range.start} ~ ${range.endInclusive} 사이여야만 합니다.").left()
             }
             map["max_tokens"] = it
         }
-        presencePenalty.tap {
+        presencePenalty.onSome {
             it.checkRangeAndFatal(-2.0..2.0) { range ->
                 return IllegalArgumentException("Presence Penalty 값은 ${range.start} ~ ${range.endInclusive} 사이여야만 합니다.").left()
             }
             map["presence_penalty"] = it
         }
-        frequencyPenalty.tap {
+        frequencyPenalty.onSome {
             it.checkRangeAndFatal(-2.0..2.0) { range ->
                 return IllegalArgumentException("Frequency Penalty 값은 ${range.start} ~ ${range.endInclusive} 사이여야만 합니다.").left()
             }
             map["frequency_penalty"] = it
         }
-        functions.tap {
+        functions.onSome {
             for (key in it) {
-                if (functionStore.getFunction(key).isEmpty())
+                if (functionStore.getFunction(key).isNone())
                     return IllegalArgumentException("존재하지 않는 함수 키입니다. ($key)").left()
             }
-            map["functions"] = it.map { key -> functionStore.getFunction(key).orNull()!!.serialize().getOrNull()!! }
+            map["functions"] = it.map { key -> functionStore.getFunction(key).getOrNull()!!.serialize().getOrNull()!! }
         }
-        bestOf.tap {
+        bestOf.onSome {
             if (it > 10) {
                 return IllegalArgumentException("bestOf 값은 10 이하여야 합니다.").left()
             }

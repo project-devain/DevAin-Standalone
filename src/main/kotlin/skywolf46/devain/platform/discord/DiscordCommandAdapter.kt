@@ -17,7 +17,7 @@ class DiscordCommandAdapter(private val jda: JDA) : ListenerAdapter() {
             commandRegistry[commandData.first] = x
             updateAction.addCommands(commandData.second)
             if (x is ImprovedDiscordCommand) {
-                x.modalId.tap {
+                x.modalId.onSome {
                     modalRegistry[it] = x
                 }
             }

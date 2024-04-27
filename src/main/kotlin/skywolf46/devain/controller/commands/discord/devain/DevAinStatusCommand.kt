@@ -80,9 +80,8 @@ class DevAinStatusCommand : ImprovedDiscordCommand("status", "DevAin 봇의 상�
             event.reply("이 플러그인은 통계를 제공하지 않습니다.").queue()
             return
         }
-        event.deferEmbed { _, hook ->
+        event.deferEmbed { _, _ ->
             EmbedBuilder()
-//                .setTitle("DevAin Standalone (${propertiesApiCall.certainly()["version"]})")
                 .apply {
                     setTitle("Plugin Statistics ($pluginName)")
                     setColor(Color.CYAN)

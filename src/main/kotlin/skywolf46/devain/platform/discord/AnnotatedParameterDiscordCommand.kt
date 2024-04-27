@@ -47,7 +47,7 @@ abstract class AnnotatedParameterDiscordCommand<T : Any>(
         val parameters = mutableMapOf<KParameter, ParsedParameterInfo>()
 
         init {
-            verify().tap {
+            verify().onSome {
                 throw RuntimeException(it)
             }
             inspect()

@@ -73,19 +73,19 @@ abstract class GPTCommand(command: String, description: String) :
 
                 addField("Process", box(TimeUtil.toTimeString(System.currentTimeMillis() - request.createdOn)), true)
 
-                request.maxTokens.tap {
+                request.maxTokens.onSome {
                     addField("Max Token", box(it.toString()), true)
                 }
-                request.top_p.tap {
+                request.top_p.onSome {
                     addField("top_p", box(it.toString()), true)
                 }
-                request.temperature.tap {
+                request.temperature.onSome {
                     addField("Temperture", box(it.toString()), true)
                 }
-                request.frequencyPenalty.tap {
+                request.frequencyPenalty.onSome {
                     addField("Frequency Penalty", box(it.toString()), true)
                 }
-                request.presencePenalty.tap {
+                request.presencePenalty.onSome {
                     addField("Presence Penalty", box(it.toString()), true)
                 }
                 if (request.showFunctionTrace) {

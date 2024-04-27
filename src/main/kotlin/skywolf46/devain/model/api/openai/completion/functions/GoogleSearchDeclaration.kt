@@ -28,7 +28,7 @@ class GoogleSearchDeclaration : OpenAIFunctionDeclaration(
         return apiCall.call(GoogleSearchRequest(param["query"].toString(), 6))
             .map {
                 JSONObject().apply {
-                    put("result", it.items.mapIndexed { index, item ->
+                    put("result", it.items.mapIndexed { _, item ->
                         JSONObject().apply {
                             put("title", item.title)
                             if (item.link.length < 50)

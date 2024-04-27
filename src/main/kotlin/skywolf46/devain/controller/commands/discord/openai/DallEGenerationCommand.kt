@@ -51,7 +51,7 @@ class DallEGenerationCommand : ImprovedDiscordCommand("dalle", "OpenAI DallE를 
                         .setColor(Color.GREEN)
                         .setTitle("Reqeust complete - DallE")
                         .setDescription(prompt)
-                        .setImage(it.images[0].url.orNull()!!)
+                        .setImage(it.images[0].url.getOrNull()!!)
                         .build()
                 ).queue()
             }
