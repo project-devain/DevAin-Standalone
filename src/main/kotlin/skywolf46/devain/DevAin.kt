@@ -35,7 +35,6 @@ class DevAin : KoinComponent {
                 CohereModule(),
                 AnthropicModule(),
                 GroqModule(),
-                KModule(),
                 object : PluginModule("Test Fatal Plugin") {
                     override fun canBeLoaded(): Boolean {
                         return false
