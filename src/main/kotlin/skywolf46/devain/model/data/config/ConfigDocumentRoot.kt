@@ -13,16 +13,16 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
-class ConfigDocumentRoot(private val fileRoot: File) {
+class ConfigDocumentRoot(private val configRoot: File, private val configFileName: String) {
     private val expectedDocuments = mutableListOf<ExpectedDocument>()
 
     init {
-        if (!fileRoot.exists())
-            fileRoot.mkdirs()
+        if (!configRoot.exists())
+            configRoot.mkdirs()
     }
 
     fun loadSharedDocument() {
-        val file = fileRoot.resolve("config.yml")
+        val file = configRoot.resolve(configFileName)
         if (!file.exists()) {
             file.createNewFile()
             file.writeText(Yaml(DumperOptions().apply {
@@ -42,7 +42,7 @@ class ConfigDocumentRoot(private val fileRoot: File) {
     }
 
     fun <T : ConfigElement> fetchDocument(expected: KClass<T>, adaptor: ConfigAdaptor, key: String): T {
-        return fileRoot.resolve(key).inputStream().use {
+        return configRoot.resolve(key).inputStream().use {
             adaptor.serializeFrom(it)
         } as T
     }

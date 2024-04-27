@@ -19,7 +19,7 @@ class PluginManager : KoinComponent {
 
     private val lock = ReentrantLock()
 
-    private val document = ConfigDocumentRoot(File("devain/config"))
+    private val document = ConfigDocumentRoot(File("devain"), "config.yml")
 
     fun init() {
         if (isInitialized.getAndSet(true)) {
