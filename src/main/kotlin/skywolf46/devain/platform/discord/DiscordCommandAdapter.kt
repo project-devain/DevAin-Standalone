@@ -34,8 +34,6 @@ class DiscordCommandAdapter(private val jda: JDA) : ListenerAdapter() {
     }
 
     override fun onModalInteraction(event: ModalInteractionEvent) {
-        println("Modal! (${event.interaction.modalId})")
-        println(modalRegistry.keys)
         modalRegistry[event.interaction.modalId]?.onModal(event)
     }
 }

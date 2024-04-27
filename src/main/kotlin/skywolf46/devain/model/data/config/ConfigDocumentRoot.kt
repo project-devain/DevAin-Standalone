@@ -32,7 +32,6 @@ class ConfigDocumentRoot(private val configRoot: File, private val configFileNam
             }))
         }
         val loaded = Yaml().load<Map<String, Any>>(file.readText(StandardCharsets.UTF_8))
-        println("Order: ${expectedDocuments.map { it.key }}")
         expectedDocuments.forEach {
             if (loaded[it.key] == null)
                 return@forEach
