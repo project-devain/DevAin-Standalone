@@ -2,7 +2,7 @@ package skywolf46.devain.platform.plugin
 
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import skywolf46.devain.model.data.config.ConfigDocumentRoot
+import skywolf46.devain.configurator.ConfigDocumentRoot
 import java.io.File
 
 abstract class PluginModule(val pluginName: String) : KoinComponent {

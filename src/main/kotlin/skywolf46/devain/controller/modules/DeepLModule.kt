@@ -7,14 +7,14 @@ import skywolf46.devain.KEY_DEEPL_PROCEED_COUNT
 import skywolf46.devain.KEY_DEEPL_PROCEED_TOKEN
 import skywolf46.devain.apicall.certainly
 import skywolf46.devain.apicall.networking.GetRequest
+import skywolf46.devain.configurator.APITokenElement
+import skywolf46.devain.configurator.fetchSharedDocument
 import skywolf46.devain.controller.api.requests.deepl.DeepLTranslationAPICall
 import skywolf46.devain.controller.api.requests.devain.DevAinPersistenceCountAPICall
 import skywolf46.devain.controller.commands.discord.deepl.DeepLKoreanTranslationCommand
 import skywolf46.devain.controller.commands.discord.deepl.DeepLSimpleTranslationCommand
 import skywolf46.devain.controller.commands.discord.deepl.DeepLTranslationCommand
 import skywolf46.devain.controller.commands.discord.deepl.ModalDeepLKoreanTranslationCommand
-import skywolf46.devain.model.data.config.APITokenElement
-import skywolf46.devain.model.data.config.fetchSharedDocument
 import skywolf46.devain.platform.discord.DiscordBot
 import skywolf46.devain.platform.plugin.PluginModule
 

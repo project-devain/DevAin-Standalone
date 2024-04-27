@@ -4,10 +4,12 @@ import org.koin.core.component.inject
 import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
 import skywolf46.devain.*
-import skywolf46.devain.annotations.config.ConfigDefault
-import skywolf46.devain.annotations.config.MarkConfigElement
 import skywolf46.devain.apicall.certainly
 import skywolf46.devain.apicall.networking.GetRequest
+import skywolf46.devain.configurator.ConfigElement
+import skywolf46.devain.configurator.annotations.ConfigDefault
+import skywolf46.devain.configurator.annotations.MarkConfigElement
+import skywolf46.devain.configurator.fetchSharedDocument
 import skywolf46.devain.controller.api.requests.arxiv.ArxivSearchAPICall
 import skywolf46.devain.controller.api.requests.devain.DevAinPersistenceCountAPICall
 import skywolf46.devain.controller.api.requests.eve.EvEOnlineStatusAPICall
@@ -18,8 +20,6 @@ import skywolf46.devain.controller.api.requests.openweather.OpenWeatherAPICall
 import skywolf46.devain.controller.api.requests.openweather.OpenWeatherForecastAPICall
 import skywolf46.devain.controller.commands.discord.openai.*
 import skywolf46.devain.model.api.openai.completion.functions.*
-import skywolf46.devain.model.data.config.ConfigElement
-import skywolf46.devain.model.data.config.fetchSharedDocument
 import skywolf46.devain.model.data.store.OpenAIFunctionStore
 import skywolf46.devain.platform.discord.DiscordBot
 import skywolf46.devain.platform.plugin.PluginModule

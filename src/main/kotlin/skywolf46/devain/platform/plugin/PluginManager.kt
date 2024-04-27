@@ -4,7 +4,9 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
-import skywolf46.devain.model.data.config.ConfigDocumentRoot
+import skywolf46.devain.configurator.ConfigAdaptor
+import skywolf46.devain.configurator.ConfigDocumentRoot
+import skywolf46.devain.configurator.yaml.yaml
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReentrantLock
@@ -19,7 +21,7 @@ class PluginManager : KoinComponent {
 
     private val lock = ReentrantLock()
 
-    private val document = ConfigDocumentRoot(File("devain"), "config.yml")
+    private val document = ConfigDocumentRoot(File("devain/config"), "config.yml")
 
     fun init() {
         if (isInitialized.getAndSet(true)) {
@@ -29,6 +31,7 @@ class PluginManager : KoinComponent {
         filterPlugins()
         initializePlugin()
     }
+
 
     private fun loadKoinModules() {
         loadKoinModules(module {
@@ -48,7 +51,7 @@ class PluginManager : KoinComponent {
             iterateEnabledPlugin {
                 it.onPostInitialize()
             }
-            get<ConfigDocumentRoot>().loadSharedDocument()
+            get<ConfigDocumentRoot>().loadSharedDocument(ConfigAdaptor.yaml())
             iterateEnabledPlugin {
                 it.onInitializeComplete()
             }

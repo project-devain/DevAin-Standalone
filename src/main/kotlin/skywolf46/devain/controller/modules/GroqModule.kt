@@ -6,11 +6,11 @@ import org.koin.dsl.module
 import skywolf46.devain.KEY_GROQ_GENERATION_PROCEED_COUNT
 import skywolf46.devain.apicall.certainly
 import skywolf46.devain.apicall.networking.GetRequest
+import skywolf46.devain.configurator.APITokenElement
+import skywolf46.devain.configurator.fetchSharedDocument
 import skywolf46.devain.controller.api.requests.devain.DevAinPersistenceCountAPICall
 import skywolf46.devain.controller.api.requests.groq.GroqAPICall
 import skywolf46.devain.controller.commands.discord.groq.SimpleGroqCommand
-import skywolf46.devain.model.data.config.APITokenElement
-import skywolf46.devain.model.data.config.fetchSharedDocument
 import skywolf46.devain.platform.discord.DiscordBot
 import skywolf46.devain.platform.plugin.PluginModule
 
